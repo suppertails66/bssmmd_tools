@@ -1,0 +1,23 @@
+#******************************************************************************
+# Title screen tilemap generator script
+#******************************************************************************
+
+[Properties]
+#palette=pal/bssm_title_pal_mod.bin
+palette=pal/bssm_title_pal_mod_v2.bin
+dest=out/precmp/title_grp.bin
+loadAddr=0x47B
+#minTiles=0x185
+#maxTiles=0x185
+maxTiles=0x16B
+#blacklist=360-363
+
+#******************************************************************************
+# Main layout
+#******************************************************************************
+
+[Tilemap00]
+source=rsrc/title/trans/title.png
+dest=out/precmp/title_map.bin
+priority=1
+

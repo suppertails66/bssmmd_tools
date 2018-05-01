@@ -1,0 +1,25 @@
+#******************************************************************************
+# Continue text tilemap generator script
+#******************************************************************************
+
+[Properties]
+palette=pal/bssm_continue_pal.bin
+dest=out/precmp/continue_text_grp.bin
+# moved from 580 to 540 due to lack of space
+#loadAddr=0x580
+loadAddr=0x540
+#minTiles=
+#maxTiles=0x30
+maxTiles=0x60
+#blacklist=
+
+[Tilemap00]
+source=rsrc/gameover/trans/continue.png
+dest=out/nocmp/continue_map.bin
+priority=0
+useDmaFormat=1
+dmaTargetFlag=0
+dmaPlaneBaseAddr=0xC000
+dmaX=9
+dmaY=4
+

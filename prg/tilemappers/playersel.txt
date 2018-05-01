@@ -1,0 +1,54 @@
+#******************************************************************************
+# Player select tilemap generator script
+#******************************************************************************
+
+[Properties]
+palette=pal/bssm_playersel_pal.bin
+dest=out/precmp/playersel_grp.bin
+loadAddr=0x0
+#minTiles=
+maxTiles=0x500
+#blacklist=
+
+#******************************************************************************
+# Main layout
+#******************************************************************************
+
+[Tilemap00]
+source=rsrc/playersel/trans/playersel.png
+dest=out/precmp/playersel_map.bin
+priority=0
+
+#******************************************************************************
+# Character portraits.
+# In addition to the portraits embedded in the main layout, the game keeps
+# uncompressed copies of the tilemap for each portrait, which it sends to
+# the VDP to create the portrait overlapping effect. Obviously, these have to
+# be updated to match the new ordering.
+#******************************************************************************
+
+[Tilemap01]
+source=rsrc/playersel/orig/portrait1.png
+dest=out/nocmp/playersel_portrait1.bin
+priority=0
+
+[Tilemap02]
+source=rsrc/playersel/orig/portrait2.png
+dest=out/nocmp/playersel_portrait2.bin
+priority=0
+
+[Tilemap03]
+source=rsrc/playersel/orig/portrait3.png
+dest=out/nocmp/playersel_portrait3.bin
+priority=0
+
+[Tilemap04]
+source=rsrc/playersel/orig/portrait4.png
+dest=out/nocmp/playersel_portrait4.bin
+priority=0
+
+[Tilemap05]
+source=rsrc/playersel/orig/portrait5.png
+dest=out/nocmp/playersel_portrait5.bin
+priority=0
+

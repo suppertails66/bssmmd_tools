@@ -1,0 +1,55 @@
+********************************************************************************
+*                   Bishoujo Senshi Sailor Moon (Mega Drive)                   *
+*                     English Translation Patch Materials                      *
+********************************************************************************
+
+This package contains the source materials (code/art/script) for the English
+translation project for the Mega Drive game Bishoujo Senshi Sailor Moon.
+
+                    ****************************************
+                    *          Build Instructions          *
+                    ****************************************
+                    
+The build system is only set up for Unix-like systems, though none of the code
+is fundamentally dependent on this and could be ported with a bit of effort.
+You'll need GCC.
+
+First, build the bundled version of KENS, which is needed to handle the game's
+Kosinski compression.
+
+$ cd prg/kens-1.5a1/build
+$ cmake ..
+$ make
+
+Note that the version of KENS included here is slightly modified from the
+original so that the koscmp tool will accept hexadecimal input on the command
+line, so trying to substitute an existing installation will not work.
+
+Next, place a ROM image of the original game (e.g. "bssm.md") in the "prg"
+directory. To build the patched ROM:
+
+$ cd prg
+$ ./build.sh bssm.md bssm_en.md
+
+build.sh should then build all the necessary tools and output the translated
+ROM to bssm_en.md.
+
+If you want to modify the project, check build.sh to see where the resources
+that get inserted into the game are coming from.
+
+                    ****************************************
+                    *              Licensing               *
+                    ****************************************
+
+See COPYING. Basically, everything by me (Supper) is GPLv3. Eien Ni Hen's
+translation of the game script is provided under no license, but she assures
+me that she's fine with her work being used as a basis for further translations.
+
+                    ****************************************
+                    *               Credits                *
+                    ****************************************
+
+                               Supper -- Hacking
+                          Eien Ni Hen -- Translation
+                               Filler -- Special Thanks
+

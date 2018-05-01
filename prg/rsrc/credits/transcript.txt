@@ -1,0 +1,46 @@
+Staff
+
+Producer
+  Katsumi Mochizuki
+
+Programmers
+  Yukio Watanabe
+  Haruyoshi Ikeuchi
+  Yoshiki Hayakawa
+  Kokumei
+  
+Planning
+Player Design
+Visual Design
+  Michito Okamoto
+  
+Enemy Design
+  Kouki Sadamori
+
+Map Design
+  Kazuya Yukino
+  Kouki Sadamori
+
+Effect Design
+  Toshirou Nakamura
+  Tsuyoshi Matsumoto
+  Nobuyuki Ohara
+  Junichi Fujita
+
+Scenario
+  Nobuyuki Ohara
+
+Sound
+  Aki Hata
+
+Special Thanks
+  Shigenori Sasaki
+  Power Shiochi
+  Yukio Numata
+  Em Tee
+  Shuuichi Saitou
+  Kouji Saitou
+  Takeshi Tamura
+  Atsushi Satou
+  Yasuyuki Wada
+  Youko Inou

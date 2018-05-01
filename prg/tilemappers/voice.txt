@@ -1,0 +1,23 @@
+#******************************************************************************
+# Intro voice clip subs tilemap generator script
+#******************************************************************************
+
+[Properties]
+#palette=pal/bssm_title_pal_mod.bin
+palette=pal/bssm_voice_pal.bin
+dest=out/precmp/voice_grp.bin
+loadAddr=0x0
+#minTiles=0x185
+#maxTiles=0x185
+maxTiles=0x100
+#blacklist=360-363
+
+#******************************************************************************
+# Main layout
+#******************************************************************************
+
+[Tilemap00]
+source=rsrc/voice/subs.png
+dest=out/precmp/voice_map.bin
+priority=1
+

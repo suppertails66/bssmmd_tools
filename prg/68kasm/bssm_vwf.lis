@@ -1,0 +1,1566 @@
+00000000                                     1  *********************************************************************
+00000000                                     2  *          VWF font hack for Bishoujo Senshi Sailor Moon            *
+00000000                                     3  *                                                                   *
+00000000                                     4  * Code currently occupies 18F800-18FC00                             *
+00000000                                     5  *********************************************************************
+00000000                                     6    
+00000000                                     7  * 32-bit offset of current printing position in VRAM (from the base
+00000000                                     8  * position at EEAA). Can be treated as a 16-bit value for our purposes
+00000000                                     9  * (probably).
+00000000  =FFFFEE9C                         10  textPrintVramPos        equ $FFFFEE9C
+00000000                                    11  
+00000000                                    12  * 32-bit offset of base printing position in VRAM, preformatted as a
+00000000                                    13  * VDP DMA command.
+00000000  =FFFFEEAA                         14  baseTextPrintVramPos    equ $FFFFEEAA
+00000000                                    15  * ... except of course we can't do a 32-bit access at that location,
+00000000                                    16  * so here's the same thing split into words
+00000000                                    17  * oh wait the 68000 doesn't have this restriction.
+00000000                                    18  * ARM on the brain.
+00000000  =FFFFEEAA                         19  hiBaseTextPrintVramPos  equ $FFFFEEAA
+00000000  =FFFFEEAC                         20  loBaseTextPrintVramPos  equ $FFFFEEAC
+00000000                                    21  
+00000000                                    22  * The command executed to start the DMA (sum of previous two values)
+00000000  =FFFFEE94                         23  textDmaCommand          equ $FFFFEE94
+00000000                                    24  
+00000000                                    25  * Offset in font data of character to print
+00000000  =FFFFEE8C                         26  printingCharacterOffset equ $FFFFEE8C
+00000000                                    27  
+00000000                                    28  * ROM offset of font pattern data (4 patterns / 128 bytes per character)
+00000000  =00188970                         29  fontPatternData         equ $00188970
+00000000                                    30  
+00000000                                    31  * ROM offset of font width table
+00000000  =0018FC00                         32  fontWidthData           equ $0018FC00
+00000000                                    33  
+00000000                                    34  * RAM offset of 64-byte font tile write buffer.
+00000000                                    35  * Note: This is not guaranteed to be initialized at the start of each
+00000000                                    36  * scene! Have the script terminator opcode clear this and reset the
+00000000                                    37  * printing position to be safe.
+00000000                                    38  * 
+00000000                                    39  * In fact, this area of RAM is used for a 68k->VDP copy, intended to zero
+00000000                                    40  * out the nametables. It needs to be cleared at the termination of the
+00000000                                    41  * script or visual artifacts will occur.
+00000000  =FFFFD400                         42  charPutBuf              equ $FFFFD400
+00000000                                    43  
+00000000  =00000040                         44  cpSize                  equ $40
+00000000  =0000000F                         45  cpClrSize               equ $F
+00000000                                    46  
+00000000                                    47  * Current pixel-pair position in charPutBuf
+00000000                                    48  *charPutPos              equ $FFFFD440
+00000000                                    49  
+00000000  =FFFFD400                         50  buf0Addr                equ $FFFFD400
+00000000  =FFFFD440                         51  buf1Addr                equ $FFFFD440
+00000000  =FFFFD480                         52  buf2Addr                equ $FFFFD480
+00000000  =FFFFD4C0                         53  bufDirtyArray           equ $FFFFD4C0   * Byte array where nonzero entries
+00000000                                    54                                          * indicate buffers needing redraw
+00000000  =FFFFD4D0                         55  bufPos                  equ $FFFFD4D0   * Position in active buffer
+00000000  =FFFFD4D2                         56  lastActivBuf            equ $FFFFD4D2   * Index number of last active buffer
+00000000  =FFFFD4D4                         57  activBuf                equ $FFFFD4D4   * Index number of current buffer
+00000000                                    58  
+00000000                                    59    *********************************************************************
+00000000                                    60    * set up subtitles for intro voice
+00000000                                    61    *********************************************************************
+00000000                                    62  
+00000000  =003FF000                         63  voiceSubsGrpPtr         equ $3FF000
+00000000  =40000080                         64  voiceSubsGrpDmaCmd      equ $40000080   * VRAM 0000 = patterns start
+00000000                                    65  
+00000000  =003FF004                         66  voiceSubsMapPtr         equ $3FF004
+00000000  =40000083                         67  voiceSubsMapDmaCmd      equ $40000083   * VRAM C000 = plane A start
+00000000  =00000040                         68  voiceSubsMapW           equ 64
+00000000  =00000020                         69  voiceSubsMapH           equ 32
+00000000  =00001000                         70  voiceSubsMapSize        equ $1000
+00000000  =00002D62                         71  kosinskiDecmp           equ $2D62
+00000000                                    72  
+000025EC                                    73    org $25EC
+000025EC  4EB9 003FF174                     74    jsr introVoiceSetup   * call our new setup routine
+000025F2                                    75  
+003FF100                                    76    org $3FF100
+003FF100                                    77  
+003FF100                                    78    *********************************************************************
+003FF100                                    79    * generic DMA transfer routine
+003FF100                                    80    *
+003FF100                                    81    * a0 = source
+003FF100                                    82    *
+003FF100                                    83    * d0 = size
+003FF100                                    84    * d5 = dst DMA command
+003FF100                                    85    *********************************************************************
+003FF100                                    86  
+003FF100                                    87    doDmaGeneric:
+003FF100                                    88  
+003FF100  48E7 FFFE                         89    movem.l   d0-d7/a0-a6,-(a7)
+003FF104                                    90  
+003FF104                                    91    * get mode set register 2 command from RAM FFFD02
+003FF104  3C38 FD02                         92    move.w  ($FFFFFD02),d6
+003FF108                                    93    * set bit 4 (dma enable)
+003FF108  08C6 0004                         94    bset    #4,d6
+003FF10C                                    95    
+003FF10C                                    96    * prepare for VDP control port access
+003FF10C  4DF9 00C00004                     97    lea     $C00004,a6
+003FF112                                    98    
+003FF112                                    99    * set dma length
+003FF112                                   100    
+003FF112                                   101    * halve source size
+003FF112  E248                             102    lsr.w #1,d0
+003FF114                                   103    
+003FF114                                   104    * low byte
+003FF114  323C 9300                        105    move.w #$9300,d1
+003FF118  1200                             106    move.b d0,d1
+003FF11A  3C81                             107    move.w d1,(a6)
+003FF11C                                   108    
+003FF11C                                   109    * high byte
+003FF11C  E048                             110    lsr.w #8,d0
+003FF11E  323C 9400                        111    move.w #$9400,d1
+003FF122  1200                             112    move.b d0,d1
+003FF124  3C81                             113    move.w d1,(a6)
+003FF126                                   114    
+003FF126                                   115    * set up high byte of dma source commands
+003FF126  323C 9500                        116    move.w  #$9500,d1
+003FF12A  343C 9600                        117    move.w  #$9600,d2
+003FF12E  363C 9700                        118    move.w  #$9700,d3
+003FF132                                   119    
+003FF132                                   120    * get address of source data
+003FF132                                   121  *  lea     charPutBuf,a0
+003FF132                                   122    
+003FF132                                   123    * stop z80 (in preparation for 68000 freeze during dma)
+003FF132  33FC 0100 00A11100               124    move.w  #$100,$A11100
+003FF13A                                   125    * set auto data increment to 2
+003FF13A  3CBC 8F02                        126    move.w  #$8F02,(a6)
+003FF13E                                   127    * write mode set register 2
+003FF13E  3C86                             128    move.w  d6,(a6)
+003FF140                                   129    
+003FF140                                   130    * halve source address to match DMA format
+003FF140  2008                             131    move.l  a0,d0
+003FF142  E288                             132    lsr.l   #1,d0
+003FF144                                   133    
+003FF144                                   134    * copy each byte to corresponding command and execute it
+003FF144                                   135    
+003FF144                                   136    * low
+003FF144  1200                             137    move.b  d0,d1
+003FF146  3C81                             138    move.w  d1,(a6)
+003FF148                                   139    
+003FF148                                   140    * middle
+003FF148  E088                             141    lsr.l   #8,d0
+003FF14A  1400                             142    move.b  d0,d2
+003FF14C  3C82                             143    move.w  d2,(a6)
+003FF14E                                   144    
+003FF14E                                   145    * high
+003FF14E  E088                             146    lsr.l   #8,d0
+003FF150  1600                             147    move.b  d0,d3
+003FF152                                   148    * Mask off high bit (mode select)
+003FF152  C63C 007F                        149    and.b   #$7F,d3
+003FF156  3C83                             150    move.w  d3,(a6)
+003FF158                                   151    
+003FF158                                   152    * trigger DMA
+003FF158  2C85                             153    move.l d5,(a6)
+003FF15A                                   154    
+003FF15A                                   155    *** This code is probably not necessary, but it's how the original game does
+003FF15A                                   156    *** it and I'll take cargo cult programming over obscure hardware bugs
+003FF15A                                   157    * get status register
+003FF15A                                   158    ctrWaitLoop:
+003FF15A  3A16                             159      move.w  (a6),d5
+003FF15C                                   160      * loop until dma finished (if not a 68k copy)
+003FF15C  0805 0001                        161      btst    #1,d5
+003FF160  66F8                             162      bne.s   ctrWaitLoop
+003FF162                                   163    
+003FF162                                   164    * restore original mode set register 2
+003FF162  3CB8 FD02                        165    move.w  $FFFFFD02,(a6)
+003FF166                                   166    
+003FF166                                   167    *** This code is probably not necessary either
+003FF166                                   168    * do dma again ... except it won't work because we just disabled it
+003FF166                                   169  *  move.w  $FFFFEE94,(a6)
+003FF166                                   170  *  move.w  $FFFFEE96,(a6)
+003FF166                                   171    * re-copy the first word of the already-transferred pattern data (first 4
+003FF166                                   172    * pixels) to the VDP data port after performing the dma
+003FF166                                   173    * isn't this only a problem with the sega cd?
+003FF166                                   174  *  move.w  (a0),-4(a6)
+003FF166                                   175    
+003FF166                                   176    * restart z80
+003FF166  33FC 0000 00A11100               177    move.w  #0,$A11100
+003FF16E                                   178    
+003FF16E  4CDF 7FFF                        179    movem.l   (a7)+,d0-d7/a0-a6
+003FF172  4E75                             180    rts
+003FF174                                   181    
+003FF174                                   182    introVoiceSetup:
+003FF174                                   183      
+003FF174                                   184      **************************************
+003FF174                                   185      * load subtitle graphics
+003FF174                                   186      **************************************
+003FF174                                   187      
+003FF174                                   188      * decompress the subtitle graphics
+003FF174  2079 003FF000                    189      move.l voiceSubsGrpPtr,a0
+003FF17A  227C 00FF0000                    190      move.l #$FF0000,a1
+003FF180  4EB8 2D62                        191      jsr kosinskiDecmp
+003FF184                                   192      
+003FF184                                   193      * DMA to VRAM
+003FF184  207C 00FF0000                    194      move.l #$FF0000,a0
+003FF18A  2009                             195      move.l a1,d0            * get end address from decompression
+003FF18C  0480 00FF0000                    196      subi.l #$FF0000,d0    * subtract base address to get size
+003FF192  2A3C 40000080                    197      move.l #voiceSubsGrpDmaCmd,d5
+003FF198  4EB9 003FF100                    198      jsr doDmaGeneric
+003FF19E                                   199      
+003FF19E                                   200      * decompress the subtitle map
+003FF19E  2079 003FF004                    201      move.l voiceSubsMapPtr,a0
+003FF1A4  227C 00FF0000                    202      move.l #$FF0000,a1
+003FF1AA  4EB8 2D62                        203      jsr kosinskiDecmp
+003FF1AE                                   204      
+003FF1AE                                   205      * DMA to VRAM
+003FF1AE  207C 00FF0000                    206      move.l #$FF0000,a0
+003FF1B4  203C 00001000                    207      move.l #voiceSubsMapSize,d0
+003FF1BA  2A3C 40000083                    208      move.l #voiceSubsMapDmaCmd,d5
+003FF1C0  4EB9 003FF100                    209      jsr doDmaGeneric
+003FF1C6                                   210      
+003FF1C6                                   211      **************************************
+003FF1C6                                   212      * set up palette
+003FF1C6                                   213      **************************************
+003FF1C6                                   214    
+003FF1C6                                   215      * the routine that uploads the palettes during this scene is
+003FF1C6                                   216      * apparently bugged (writes longs instead of words), so palette
+003FF1C6                                   217      * offsets have to be doubled
+003FF1C6                                   218      
+003FF1C6                                   219      * palette 0 color 1 = almost-black
+003FF1C6                                   220  *    move.w #$0222,$FFFFFB86
+003FF1C6                                   221      
+003FF1C6                                   222      * palette 0 color 15 = white
+003FF1C6                                   223  *    move.w #$0EEE,$FFFFFBBE
+003FF1C6                                   224      
+003FF1C6                                   225      * palette 0 color 1 = almost-black
+003FF1C6  31FC 0222 FB82                   226      move.w #$0222,$FFFFFB82
+003FF1CC                                   227      
+003FF1CC                                   228      * palette 0 color 2 = white
+003FF1CC                                   229  *    move.w #$0EEE,$FFFFFB9E
+003FF1CC  31FC 0EEE FB84                   230      move.w #$0EEE,$FFFFFB84
+003FF1D2                                   231      
+003FF1D2                                   232      **************************************
+003FF1D2                                   233      * finish up
+003FF1D2                                   234      **************************************
+003FF1D2                                   235      
+003FF1D2                                   236      * fulfill call that we replaced to get here
+003FF1D2  4EF9 0000F9D4                    237      jmp $F9D4
+003FF1D8                                   238  
+003FF1D8                                   239    *********************************************************************
+003FF1D8                                   240    * alter load address of game over/continue graphics
+003FF1D8                                   241    * by changing DMA transfer command
+003FF1D8                                   242    *********************************************************************
+003FF1D8                                   243    
+003FF1D8                                   244    * continue
+00015FD8                                   245    org $15FD8
+00015FD8                                   246    * orig: 70000082 = B000
+00015FD8                                   247    * new = A800
+00015FD8  68000082                         248    dc.l $68000082
+00015FDC                                   249    
+00015FDC                                   250    * game over
+00015FE2                                   251    org $15FE2
+00015FE2                                   252    * orig: 76000082 = B600
+00015FE2                                   253    * new = B400
+00015FE2  74000082                         254    dc.l $74000082
+00015FE6                                   255    
+00015FE6                                   256  
+00015FE6                                   257    *********************************************************************
+00015FE6                                   258    * extend length of credits
+00015FE6                                   259    *********************************************************************
+00015FE6                                   260  
+00015874                                   261    org $15874
+00015874                                   262  *  cmpi.l #$00FF3000,($FFFFEEEA)
+00015874  0CB8 00FF3D00 EEEA               263    cmpi.l #$00FF3D00,($FFFFEEEA)
+0001587C                                   264    
+0001587C                                   265    *********************************************************************
+0001587C                                   266    * Completely irrelevant to anything else in this file:
+0001587C                                   267    * Switch the options screen so "left" lowers difficulty and "right"
+0001587C                                   268    * increases it (instead of vice versa)
+0001587C                                   269    *********************************************************************
+0001587C                                   270  
+00012A22                                   271    org       $12A22
+00012A22  6700 05F6                        272    beq       $1301A
+00012A26                                   273    
+00012A54                                   274    org       $12A54
+00012A54  6700 05A6                        275    beq       $12FFC
+00012A58                                   276    
+00012A58                                   277    * similarly irrelevant: increase numbers of tiles loaded for credits
+00015904                                   278    org       $15904
+00015904                                   279    * original value is $2D00 = 2D0 tiles
+00015904                                   280    * increase to $3800 for $380 tiles
+00015904  3E3C 3800                        281    move.w    #$3800,d7
+00015908                                   282    
+00015908                                   283    * move title screen sprite cursor 8px to the right to match new
+00015908                                   284    * centering
+00016C32                                   285    org       $16C32
+00016C32  00 E8                            286    dc.b      $00,$E8
+00016C3E                                   287    org       $16C3E
+00016C3E  00 E8                            288    dc.b      $00,$E8
+00016C40                                   289    
+00016C40                                   290    *********************************************************************
+00016C40                                   291    * Call our buffer update code
+00016C40                                   292    *********************************************************************
+00016C40                                   293    
+00016C40                                   294    ************
+00016C40                                   295    * Intro
+00016C40                                   296    ************
+00016C40                                   297    
+00016C40                                   298    * standard print
+0000B88C                                   299    org       $B88C
+0000B88C  4EB9 0018F8D0                    300    jsr       bufUpdate
+0000B892                                   301    
+0000B892                                   302    * linebreak
+0000B8CC                                   303    org       $B8CC
+0000B8CC  4EB9 0018F992                    304    jsr       initBuffers   * must clear existing content first
+0000B8D2  4EB9 0018F8D0                    305    jsr       bufUpdate
+0000B8D8                                   306    * additionally, don't skip a character on the second line
+0000B8B2                                   307    org       $B8B2
+0000B8B2  21FC 07000000 EE9C               308    move.l    #$7000000,$FFFFEE9C
+0000B8BA                                   309    
+0000B8BA                                   310    * box clear
+0000B8FC                                   311    org       $B8FC
+0000B8FC  4EB9 0018F80E                    312    jsr       injctClrBox
+0000B902  4E71                             313    nop
+0000B904                                   314    
+0000B904                                   315    * script initialization
+0000B81E                                   316    org       $B81E
+0000B81E  4EB9 0018F80E                    317    jsr       injctClrBox
+0000B824  4E71                             318    nop
+0000B826                                   319    
+0000B826                                   320    * end-of-script buffer clear
+0000BA2E                                   321    org       $BA2E
+0000BA2E  4EB9 0018F838                    322    jsr       injctTr2
+0000BA34                                   323    
+0000BA34                                   324    ************
+0000BA34                                   325    * Gameplay
+0000BA34                                   326    ************
+0000BA34                                   327    
+0000BA34                                   328    * standard print
+0000BC48                                   329    org       $BC48
+0000BC48  4EB9 0018F8D0                    330    jsr       bufUpdate
+0000BC4E                                   331    
+0000BC4E                                   332    * linebreak
+0000BC88                                   333    org       $BC88
+0000BC88  4EB9 0018F992                    334    jsr       initBuffers   * must clear existing content first
+0000BC8E  4EB9 0018F8D0                    335    jsr       bufUpdate
+0000BC94                                   336    * additionally, don't skip a character on the second line
+0000BC6E                                   337    org       $BC6E
+0000BC6E  21FC 04000000 EE9C               338    move.l    #$4000000,$FFFFEE9C
+0000BC76                                   339    
+0000BC76                                   340    * box clear
+0000BCC0                                   341    org       $BCC0
+0000BCC0  4EB9 0018F80E                    342    jsr       injctClrBox
+0000BCC6  4E71                             343    nop
+0000BCC8                                   344    
+0000BCC8                                   345    * script initialization
+0000BBD0                                   346    org       $BBD0
+0000BBD0  4EB9 0018F80E                    347    jsr       injctClrBox
+0000BBD6  4E71                             348    nop
+0000BBD8                                   349    
+0000BBD8                                   350    * end-of-script buffer clear
+0000BDD8                                   351    org       $BDD8
+0000BDD8  4EF9 0018F81E                    352    jmp       injctTr1
+0000BDDE  4E71                             353    nop
+0000BDE0                                   354  
+0000BDE0                                   355    *********************************************************************
+0000BDE0                                   356    * Eliminate width updates in text script handlers
+0000BDE0                                   357    *********************************************************************
+0000BDE0                                   358    
+0000BDE0                                   359    * Intro scripts
+0000BB14                                   360    org $BB14
+0000BB14  4E71                             361    nop
+0000BB16  4E71                             362    nop
+0000BB18  4E71                             363    nop
+0000BB1A                                   364    
+0000BB1A                                   365    * Game scripts
+0000BE84                                   366    org $BE84
+0000BE84  4E71                             367    nop
+0000BE86  4E71                             368    nop
+0000BE88  4E71                             369    nop
+0000BE8A                                   370  
+0000BE8A                                   371    *********************************************************************
+0000BE8A                                   372    * Eliminate EE94 updates in text script handlers
+0000BE8A                                   373    *********************************************************************
+0000BE8A                                   374    
+0000BE8A                                   375    * Game scripts
+0000BE8A                                   376  *  org $BE9A
+0000BE8A                                   377  *  nop
+0000BE8A                                   378  *  nop
+0000BE8A                                   379  
+0000BE8A                                   380    *********************************************************************
+0000BE8A                                   381    * The game sometimes uses the "unused" portions of memory we've
+0000BE8A                                   382    * co-opted for this hack as the source for DMA transfers, the
+0000BE8A                                   383    * assumption being that this memory is zeroed and can therefore be
+0000BE8A                                   384    * used to clear out VRAM.
+0000BE8A                                   385    * We have to make sure we clean out this part of memory when that
+0000BE8A                                   386    * happens.
+0000BE8A                                   387    *********************************************************************
+0000BE8A                                   388  
+0000FB82                                   389    org $FB82
+0000FB82  4EB9 0018F800                    390    jsr dmaClrFix
+0000FB88                                   391  
+0000FB88                                   392    *********************************************************************
+0000FB88                                   393    * Disable region lockout
+0000FB88                                   394    *********************************************************************
+0000FB88                                   395    
+000028DE                                   396    org $28DE
+000028DE  4E71                             397    nop
+000028E0  4E71                             398    nop
+000028E2                                   399  
+000028E2                                   400    *********************************************************************
+000028E2                                   401    * VBlank injection point
+000028E2                                   402    *********************************************************************
+000028E2                                   403  
+0000C0FE                                   404    org $C0FE
+0000C0FE                                   405    
+0000C0FE  4EF9 0018F846                    406    jmp vwfHackStart
+0000C104                                   407   
+0000C104  =0000C16C                        408  injectionRetPoint equ $C16C
+0000C104                                   409  
+0000C104                                   410  *********************************************************************
+0000C104                                   411  * Hack code begins here
+0000C104                                   412  *********************************************************************
+0000C104                                   413  
+0018F800                                   414    org $18F800
+0018F800                                   415  
+0018F800                                   416    *********************************************************************
+0018F800                                   417    * Injection code for "virtual DMA clear" fix
+0018F800                                   418    *********************************************************************
+0018F800                                   419    
+0018F800                                   420  dmaClrFix:
+0018F800                                   421    
+0018F800                                   422    * clear buffers
+0018F800  4EB9 0018F992                    423    jsr       initBuffers
+0018F806                                   424    
+0018F806                                   425    * make up work
+0018F806  2A3C 50000083                    426    move.l   #$50000083,d5
+0018F80C                                   427    
+0018F80C  4E75                             428    rts
+0018F80E                                   429  
+0018F80E                                   430    *********************************************************************
+0018F80E                                   431    * Injection code for text box clear routines
+0018F80E                                   432    *********************************************************************
+0018F80E                                   433    
+0018F80E                                   434  injctClrBox:
+0018F80E                                   435    
+0018F80E                                   436    * make up work
+0018F80E  21FC 00000000 EE9C               437    move.l    #0,$FFFFEE9C
+0018F816                                   438    
+0018F816                                   439    * clear buffers
+0018F816  4EB9 0018F992                    440    jsr       initBuffers
+0018F81C                                   441    
+0018F81C  4E75                             442    rts
+0018F81E                                   443  
+0018F81E                                   444    *********************************************************************
+0018F81E                                   445    * Injection code for script terminator routines
+0018F81E                                   446    *********************************************************************
+0018F81E                                   447    
+0018F81E                                   448  injctTr1:
+0018F81E                                   449    
+0018F81E                                   450    * clear buffers
+0018F81E  4EB9 0018F992                    451    jsr       initBuffers
+0018F824                                   452    
+0018F824                                   453    * make up work
+0018F824  5338 EEB6                        454    subq.b    #1,$FFFFEEB6
+0018F828  6A00 0008                        455    bpl       injcTrJ1
+0018F82C  4EF9 0000BDE0                    456    jmp       $BDE0
+0018F832                                   457    
+0018F832                                   458  injcTrJ1:
+0018F832  4EF9 0000BE22                    459    jmp       $BE22
+0018F838                                   460    
+0018F838                                   461  injctTr2:
+0018F838                                   462    
+0018F838                                   463    * clear buffers
+0018F838  4EB9 0018F992                    464    jsr       initBuffers
+0018F83E                                   465    
+0018F83E                                   466    * make up work
+0018F83E  31FC 0000 EE86                   467    move.w    #0,$FFFFEE86
+0018F844                                   468    
+0018F844  4E75                             469    rts
+0018F846                                   470  
+0018F846                                   471    *********************************************************************
+0018F846                                   472    * Interrupt handler modifications
+0018F846                                   473    *********************************************************************
+0018F846                                   474    
+0018F846                                   475  vwfHackStart:
+0018F846                                   476  
+0018F846                                   477    * Initialize the VRAM put command
+0018F846  4EB9 0018FADA                    478    jsr     setVramCom
+0018F84C                                   479    
+0018F84C                                   480    * Starting at the index of the last active buffer, check each buffer for
+0018F84C                                   481    * dirtiness, and transfer it to VRAM if dirty.
+0018F84C                                   482    * As soon as we find a clean buffer, we're done.
+0018F84C                                   483    * At most three checks are necessary (for the three buffers).
+0018F84C                                   484    
+0018F84C                                   485    * Get last active buffer index
+0018F84C  3438 D4D4                        486    move    (activBuf),d2
+0018F850  3238 D4D2                        487    move    (lastActivBuf),d1
+0018F854  3001                             488    move    d1,d0
+0018F856                                   489  
+0018F856                                   490    *********************************************************************
+0018F856                                   491    * Check 1
+0018F856                                   492    *********************************************************************
+0018F856                                   493    
+0018F856                                   494    * Is this buffer dirty?
+0018F856  6100 01E6                        495    bsr     isBufDirty
+0018F85A                                   496    
+0018F85A                                   497    * No: we're done
+0018F85A  B07C 0000                        498    cmp     #0,d0
+0018F85E  6700 005C                        499    beq     vwfchkDone
+0018F862                                   500    
+0018F862                                   501    * Yes: mark as clean and flush it
+0018F862  3001                             502    move    d1,d0
+0018F864  6100 016C                        503    bsr     cleanBuffer
+0018F868  6100 01EE                        504    bsr     transCharBuf
+0018F86C                                   505    
+0018F86C                                   506  *  bsr     clearCharBuf
+0018F86C                                   507  
+0018F86C                                   508    * If this buffer is still active, we'll write more data to it and will
+0018F86C                                   509    * need to flush it to this same position again.
+0018F86C                                   510    * Otherwise, move to the next VRAM position.
+0018F86C  B441                             511    cmp     d1,d2
+0018F86E  6700 0006                        512    beq     vwfchk2
+0018F872  6100 027C                        513      bsr     incVramPos
+0018F876                                   514  
+0018F876                                   515    *********************************************************************
+0018F876                                   516    * Check 2
+0018F876                                   517    *********************************************************************
+0018F876                                   518  vwfchk2:
+0018F876                                   519  
+0018F876                                   520    * Get the index of the next buffer in the sequence
+0018F876  3001                             521    move    d1,d0
+0018F878  6100 01CE                        522    bsr     getNextBuf
+0018F87C                                   523    * Update register
+0018F87C  3200                             524    move    d0,d1
+0018F87E                                   525    
+0018F87E                                   526    * Is this buffer dirty?
+0018F87E  6100 01BE                        527    bsr     isBufDirty
+0018F882                                   528    
+0018F882                                   529    * No: we're done
+0018F882  B07C 0000                        530    cmp     #0,d0
+0018F886  6700 0034                        531    beq     vwfchkDone
+0018F88A                                   532    
+0018F88A                                   533    * Yes: mark as clean and flush it
+0018F88A  3001                             534    move    d1,d0
+0018F88C  6100 0144                        535    bsr     cleanBuffer
+0018F890  6100 01C6                        536    bsr     transCharBuf
+0018F894                                   537    
+0018F894                                   538    * If this buffer is still active, we'll write more data to it and will
+0018F894                                   539    * need to flush it to this same position again.
+0018F894                                   540    * Otherwise, move to the next VRAM position.
+0018F894  B441                             541    cmp     d1,d2
+0018F896  6700 0006                        542    beq     vwfchk3
+0018F89A  6100 0254                        543      bsr     incVramPos
+0018F89E                                   544  
+0018F89E                                   545    *********************************************************************
+0018F89E                                   546    * Check 3
+0018F89E                                   547    *********************************************************************
+0018F89E                                   548  vwfchk3:
+0018F89E                                   549  
+0018F89E                                   550    * Get the index of the next buffer in the sequence
+0018F89E  3001                             551    move    d1,d0
+0018F8A0  6100 01A6                        552    bsr     getNextBuf
+0018F8A4                                   553    * Update register
+0018F8A4  3200                             554    move    d0,d1
+0018F8A6                                   555    
+0018F8A6                                   556    * Is this buffer dirty?
+0018F8A6  6100 0196                        557    bsr     isBufDirty
+0018F8AA                                   558    
+0018F8AA                                   559    * No: we're done
+0018F8AA  B07C 0000                        560    cmp     #0,d0
+0018F8AE  6700 000C                        561    beq     vwfchkDone
+0018F8B2                                   562    
+0018F8B2                                   563    * Yes: mark as clean and flush it
+0018F8B2  3001                             564    move    d1,d0
+0018F8B4  6100 011C                        565    bsr     cleanBuffer
+0018F8B8  6100 019E                        566    bsr     transCharBuf
+0018F8BC                                   567    
+0018F8BC                                   568    * If this buffer is still active, we'll write more data to it and will
+0018F8BC                                   569    * need to flush it to this same position again.
+0018F8BC                                   570    * Otherwise, move to the next VRAM position.
+0018F8BC                                   571    * 
+0018F8BC                                   572    * this will never happen (if we get to the third buffer at all, it must
+0018F8BC                                   573    * be active)
+0018F8BC                                   574  *  cmp     d1,d2
+0018F8BC                                   575  *  beq     vwfchkDone
+0018F8BC                                   576  *    bsr     incVramPos
+0018F8BC                                   577  
+0018F8BC                                   578    *********************************************************************
+0018F8BC                                   579    * Finish up
+0018F8BC                                   580    *********************************************************************
+0018F8BC                                   581  vwfchkDone:
+0018F8BC                                   582    
+0018F8BC                                   583    * Update last active buffer position to current
+0018F8BC  3238 D4D4                        584    move    (activBuf),d1
+0018F8C0  31C1 D4D2                        585    move    d1,(lastActivBuf)
+0018F8C4                                   586    
+0018F8C4                                   587    * "Acknowledge" transfer
+0018F8C4                                   588    * (the original game does not do this; it will continue transferring
+0018F8C4                                   589    * the same character to the same VRAM position every frame until the
+0018F8C4                                   590    * script moves on to the next command)
+0018F8C4  31FC 0000 EE82                   591    move    #0,$FFFFEE82
+0018F8CA                                   592   
+0018F8CA                                   593    * Done: return to normal logic
+0018F8CA                                   594  *  movem  (a7)+,d0-d7/a0-a6
+0018F8CA  4EF9 0000C16C                    595    jmp injectionRetPoint
+0018F8D0                                   596  
+0018F8D0                                   597    *********************************************************************
+0018F8D0                                   598    * bufUpdate
+0018F8D0                                   599    * 
+0018F8D0                                   600    * Writes new character data to the buffers and updates state variables
+0018F8D0                                   601    * accordingly.
+0018F8D0                                   602    * 
+0018F8D0                                   603    * Arguments:
+0018F8D0                                   604    *
+0018F8D0                                   605    * Trashes:
+0018F8D0                                   606    *   Everything
+0018F8D0                                   607    *
+0018F8D0                                   608    *********************************************************************
+0018F8D0                                   609  
+0018F8D0                                   610  bufUpdate:
+0018F8D0                                   611  
+0018F8D0  48E7 0080                        612    movem.l a0,-(a7)
+0018F8D4                                   613    
+0018F8D4                                   614    * Get the offset of the target font character
+0018F8D4  2A38 EE8C                        615    move.l  (printingCharacterOffset),d5
+0018F8D8  2005                             616    move.l  d5,d0
+0018F8DA                                   617    * Subtract off the base position
+0018F8DA  223C 00188970                    618    move.l  #fontPatternData,d1
+0018F8E0  9081                             619    sub.l   d1,d0
+0018F8E2  2C00                             620    move.l  d0,d6
+0018F8E4                                   621    
+0018F8E4                                   622    * Convert offset to width table index (divide by 64)
+0018F8E4  EC4E                             623    lsr     #6,d6
+0018F8E6                                   624    
+0018F8E6                                   625    * Look up width entry address
+0018F8E6  207C 0018FC00                    626    movea.l #fontWidthData,a0
+0018F8EC  D1C6                             627    add.l   d6,a0
+0018F8EE                                   628    
+0018F8EE                                   629    * Get pixel width of character from width entry (byte 0)
+0018F8EE  1C10                             630    move.b  (a0),d6
+0018F8F0  4886                             631    ext.w   d6
+0018F8F2                                   632    
+0018F8F2                                   633    * Initialize D3: copy position, in pixels, in src
+0018F8F2  7600                             634    move.l  #0,d3
+0018F8F4                                   635    
+0018F8F4                                   636    * get buffer putpos
+0018F8F4  3838 D4D0                        637    move    (bufPos),d4
+0018F8F8                                   638    
+0018F8F8                                   639    * At this point:
+0018F8F8                                   640    * 
+0018F8F8                                   641    * a0 = offset of width info struct
+0018F8F8                                   642    * 
+0018F8F8                                   643    * d3 = copy position (initialized to zero)
+0018F8F8                                   644    * d4 = pixel pos in dst char buffer
+0018F8F8                                   645    * d5 = pointer to target src character pattern data
+0018F8F8                                   646    * d6 = pixel width of target character
+0018F8F8                                   647    
+0018F8F8                                   648    
+0018F8F8                                   649    *****************
+0018F8F8                                   650    * Transfer 1
+0018F8F8                                   651    * This copies up to the next pattern-column boundary in dst VRAM.
+0018F8F8                                   652    *****************
+0018F8F8                                   653    
+0018F8F8                                   654    * Transfer width: Number of pixels needed to reach the next dst
+0018F8F8                                   655    * column boundary, or all of them if fewer.
+0018F8F8                                   656    * Formula: 8 - (dstBasePos % 8)
+0018F8F8                                   657    
+0018F8F8                                   658    * get pixel offset in dst
+0018F8F8  3204                             659    move    d4,d1
+0018F8FA                                   660    * take modulo 8
+0018F8FA  0241 0007                        661    andi    #$0007,d1
+0018F8FE                                   662    * subtract from 8
+0018F8FE  303C 0008                        663    move    #8,d0
+0018F902  9041                             664    sub     d1,d0
+0018F904                                   665    * if the result is greater than the actual number of pixels remaining,
+0018F904                                   666    * just copy what's there
+0018F904  BC40                             667    cmp     d0,d6
+0018F906  6E00 0004                        668    bgt     budL1
+0018F90A  3006                             669    move    d6,d0
+0018F90C                                   670    
+0018F90C                                   671  budL1:
+0018F90C                                   672  
+0018F90C                                   673    * save transfer width
+0018F90C  3E00                             674    move    d0,d7
+0018F90E                                   675    
+0018F90E                                   676    * Update count of pixel-pairs remaining
+0018F90E  9C40                             677    sub     d0,d6
+0018F910                                   678    
+0018F910                                   679    * Clear active buffer if "new" (not yet written to)
+0018F910  6100 00F8                        680    bsr     clrNewBuf
+0018F914                                   681    
+0018F914                                   682    * Get pointer to active buffer
+0018F914  6100 00D8                        683    bsr     getActBuffer
+0018F918                                   684    
+0018F918                                   685    * Do the transfer
+0018F918  6100 01FC                        686    bsr     transferCharData
+0018F91C                                   687    
+0018F91C                                   688    * Update curPixelPos
+0018F91C  D647                             689    add     d7,d3
+0018F91E                                   690    
+0018F91E                                   691    * Update dstVramPos (buffer putpos)
+0018F91E  D847                             692    add     d7,d4
+0018F920                                   693    * Write updated buffer putpos
+0018F920  31C4 D4D0                        694    move    d4,(bufPos)
+0018F924                                   695    
+0018F924                                   696    * Update buffers
+0018F924  6100 0108                        697    bsr updBufPrint
+0018F928                                   698    
+0018F928                                   699    * Read updated buffer putpos
+0018F928  3838 D4D0                        700    move    (bufPos),d4
+0018F92C                                   701    
+0018F92C                                   702    * If all columns have been transferred, we're done
+0018F92C  BC7C 0000                        703    cmp     #0,d6
+0018F930  6700 005A                        704    beq     budDone
+0018F934                                   705    
+0018F934                                   706    *****************
+0018F934                                   707    * Transfer 2
+0018F934                                   708    * Copies 8 pixel columns, or all if there are fewer than that
+0018F934                                   709    *****************
+0018F934                                   710    
+0018F934                                   711    * Default width: 8
+0018F934  3E3C 0008                        712    move    #8,d7
+0018F938                                   713    * If fewer pixels than that remain, lower appropriately
+0018F938  BE46                             714    cmp     d6,d7
+0018F93A  6F00 0004                        715    ble     budL2
+0018F93E  3E06                             716    move    d6,d7
+0018F940                                   717    
+0018F940                                   718  budL2:
+0018F940                                   719    
+0018F940                                   720    * Update count of pixels remaining
+0018F940  9C47                             721    sub     d7,d6
+0018F942                                   722    
+0018F942                                   723    * Clear active buffer if "new" (not yet written to)
+0018F942  6100 00C6                        724    bsr     clrNewBuf
+0018F946                                   725    
+0018F946                                   726    * Get pointer to active buffer
+0018F946  6100 00A6                        727    bsr     getActBuffer
+0018F94A                                   728    
+0018F94A                                   729    * Do the transfer
+0018F94A  6100 01CA                        730    bsr     transferCharData
+0018F94E                                   731    
+0018F94E                                   732    * Update curPixelPos
+0018F94E  D647                             733    add     d7,d3
+0018F950                                   734    
+0018F950                                   735    * Update dstVramPos
+0018F950  D847                             736    add     d7,d4
+0018F952                                   737    * Write updated buffer putpos
+0018F952  31C4 D4D0                        738    move    d4,(bufPos)
+0018F956                                   739    
+0018F956                                   740    * Update buffers
+0018F956  6100 00D6                        741    bsr updBufPrint
+0018F95A                                   742    
+0018F95A                                   743    * Read updated buffer putpos
+0018F95A  3838 D4D0                        744    move    (bufPos),d4
+0018F95E                                   745    
+0018F95E                                   746    * If all columns have been transferred, we're done
+0018F95E  BC7C 0000                        747    cmp     #0,d6
+0018F962  6700 0028                        748    beq     budDone
+0018F966                                   749    
+0018F966                                   750    *****************
+0018F966                                   751    * Transfer 3
+0018F966                                   752    * Copies 8 pixel columns, or all if there are fewer than that
+0018F966                                   753    *****************
+0018F966                                   754    
+0018F966                                   755    * Default width: 8
+0018F966  3E3C 0008                        756    move    #8,d7
+0018F96A                                   757    * If fewer pixel-pairs than that remain, lower appropriately
+0018F96A  BE46                             758    cmp     d6,d7
+0018F96C  6F00 0004                        759    ble     budL3
+0018F970  3E06                             760    move    d6,d7
+0018F972                                   761    
+0018F972                                   762  budL3:
+0018F972                                   763    
+0018F972                                   764    * Update count of pixels remaining
+0018F972  9C47                             765    sub     d7,d6
+0018F974                                   766    
+0018F974                                   767    * Clear active buffer if "new" (not yet written to)
+0018F974  6100 0094                        768    bsr     clrNewBuf
+0018F978                                   769    
+0018F978                                   770    * Get pointer to active buffer
+0018F978  6100 0074                        771    bsr     getActBuffer
+0018F97C                                   772    
+0018F97C                                   773    * Do the transfer
+0018F97C  6100 0198                        774    bsr     transferCharData
+0018F980                                   775    
+0018F980                                   776    * Update curPixelPos
+0018F980  D647                             777    add     d7,d3
+0018F982                                   778    
+0018F982                                   779    * Update dstVramPos
+0018F982  D847                             780    add     d7,d4
+0018F984                                   781    * Write updated buffer putpos
+0018F984  31C4 D4D0                        782    move    d4,(bufPos)
+0018F988                                   783    
+0018F988                                   784    * Update buffers
+0018F988  6100 00A4                        785    bsr     updBufPrint
+0018F98C                                   786    
+0018F98C                                   787    * Read updated buffer putpos
+0018F98C                                   788  *  move    (bufPos),d4
+0018F98C                                   789    
+0018F98C                                   790    *****************
+0018F98C                                   791    * Finish up
+0018F98C                                   792    *****************
+0018F98C                                   793  budDone:
+0018F98C                                   794      
+0018F98C  4CDF 0100                        795    movem.l (a7)+,a0
+0018F990  4E75                             796    rts
+0018F992                                   797  
+0018F992                                   798    *********************************************************************
+0018F992                                   799    * initBuffers
+0018F992                                   800    * 
+0018F992                                   801    * Initializes buffers and related variables.
+0018F992                                   802    * 
+0018F992                                   803    * Arguments:
+0018F992                                   804    *
+0018F992                                   805    * Trashes:
+0018F992                                   806    *
+0018F992                                   807    *********************************************************************
+0018F992                                   808    
+0018F992                                   809  initBuffers:
+0018F992                                   810    
+0018F992  48E7 C080                        811    movem.l d0-d1/a0,-(a7)
+0018F996                                   812    
+0018F996  7000                             813    move.l  #0,d0
+0018F998  723F                             814    move.l  #$3F,d1
+0018F99A  41F8 D400                        815    lea     buf0Addr,a0
+0018F99E                                   816    
+0018F99E                                   817  intbLoop:
+0018F99E  20C0                             818    move.l  d0,(a0)+
+0018F9A0  51C9 FFFC                        819    dbra    d1,intbLoop
+0018F9A4                                   820    
+0018F9A4  4CDF 0103                        821    movem.l (a7)+,d0-d1/a0
+0018F9A8                                   822    
+0018F9A8  4E75                             823    rts
+0018F9AA                                   824  
+0018F9AA                                   825    *********************************************************************
+0018F9AA                                   826    * getBuffer
+0018F9AA                                   827    * 
+0018F9AA                                   828    * Returns the address of a buffer by index.
+0018F9AA                                   829    * 
+0018F9AA                                   830    * Arguments:
+0018F9AA                                   831    *   D0: Buffer index. Must be 0, 1, or 2.
+0018F9AA                                   832    *
+0018F9AA                                   833    * Trashes:
+0018F9AA                                   834    *   D0
+0018F9AA                                   835    *
+0018F9AA                                   836    *********************************************************************
+0018F9AA                                   837  
+0018F9AA                                   838  getBuffer:
+0018F9AA  B07C 0000                        839    cmp     #0,d0
+0018F9AE  6600 000A                        840    bne     gabNext1
+0018F9B2                                   841    
+0018F9B2  203C FFFFD400                    842    move.l  #buf0Addr,d0
+0018F9B8  4E75                             843    rts
+0018F9BA                                   844    
+0018F9BA                                   845  gabNext1:
+0018F9BA                                   846    
+0018F9BA  B07C 0001                        847    cmp     #1,d0
+0018F9BE  6600 000A                        848    bne     gabNext2
+0018F9C2                                   849    
+0018F9C2  203C FFFFD440                    850    move.l  #buf1Addr,d0
+0018F9C8  4E75                             851    rts
+0018F9CA                                   852    
+0018F9CA                                   853  gabNext2:
+0018F9CA                                   854    
+0018F9CA  203C FFFFD480                    855    move.l  #buf2Addr,d0
+0018F9D0  4E75                             856    rts
+0018F9D2                                   857  
+0018F9D2                                   858    *********************************************************************
+0018F9D2                                   859    * cleanBuffer
+0018F9D2                                   860    * 
+0018F9D2                                   861    * Marks a buffer as clean.
+0018F9D2                                   862    * 
+0018F9D2                                   863    * Arguments:
+0018F9D2                                   864    *   D0: Buffer index.
+0018F9D2                                   865    *
+0018F9D2                                   866    * Trashes:
+0018F9D2                                   867    *   A0
+0018F9D2                                   868    *
+0018F9D2                                   869    *********************************************************************
+0018F9D2                                   870    
+0018F9D2                                   871  cleanBuffer:
+0018F9D2                                   872    
+0018F9D2  41F8 D4C0                        873    lea     bufDirtyArray,a0
+0018F9D6  11BC 0000 0000                   874    move.b  #$00,(a0,d0.w)
+0018F9DC                                   875    
+0018F9DC  4E75                             876    rts
+0018F9DE                                   877    
+0018F9DE                                   878  
+0018F9DE                                   879    *********************************************************************
+0018F9DE                                   880    * markActBuffer
+0018F9DE                                   881    * 
+0018F9DE                                   882    * Marks active buffer as dirty.
+0018F9DE                                   883    * 
+0018F9DE                                   884    * Arguments:
+0018F9DE                                   885    *
+0018F9DE                                   886    * Trashes:
+0018F9DE                                   887    *   D0
+0018F9DE                                   888    *   A0
+0018F9DE                                   889    *
+0018F9DE                                   890    *********************************************************************
+0018F9DE                                   891  
+0018F9DE                                   892  markActBuffer:
+0018F9DE                                   893    
+0018F9DE  3038 D4D4                        894    move    (activBuf),d0
+0018F9E2  41F8 D4C0                        895    lea     bufDirtyArray,a0
+0018F9E6  11BC 00FF 0000                   896    move.b  #$FF,(a0,d0.w)
+0018F9EC                                   897    
+0018F9EC  4E75                             898    rts
+0018F9EE                                   899  
+0018F9EE                                   900    *********************************************************************
+0018F9EE                                   901    * getActBuffer
+0018F9EE                                   902    * 
+0018F9EE                                   903    * Returns the address of the active buffer.
+0018F9EE                                   904    * 
+0018F9EE                                   905    * Arguments:
+0018F9EE                                   906    *
+0018F9EE                                   907    * Trashes:
+0018F9EE                                   908    *   D0
+0018F9EE                                   909    *
+0018F9EE                                   910    *********************************************************************
+0018F9EE                                   911    
+0018F9EE                                   912  getActBuffer:
+0018F9EE                                   913    
+0018F9EE  3038 D4D4                        914    move    (activBuf),d0
+0018F9F2  61B6                             915    bsr     getBuffer
+0018F9F4                                   916    
+0018F9F4  4E75                             917    rts
+0018F9F6                                   918  
+0018F9F6                                   919    *********************************************************************
+0018F9F6                                   920    * advBuffer
+0018F9F6                                   921    * 
+0018F9F6                                   922    * Advances to the next buffer.
+0018F9F6                                   923    * 
+0018F9F6                                   924    * Arguments:
+0018F9F6                                   925    *
+0018F9F6                                   926    * Trashes:
+0018F9F6                                   927    *   D0
+0018F9F6                                   928    *
+0018F9F6                                   929    *********************************************************************
+0018F9F6                                   930  
+0018F9F6                                   931  advBuffer:
+0018F9F6                                   932    
+0018F9F6  3038 D4D4                        933    move    (activBuf),d0
+0018F9FA  6100 004C                        934    bsr     getNextBuf
+0018F9FE  31C0 D4D4                        935    move    d0,(activBuf)
+0018FA02                                   936    
+0018FA02                                   937    * Reset buffer put position
+0018FA02  31FC 0000 D4D0                   938    move    #0,(bufPos)
+0018FA08                                   939    
+0018FA08  4E75                             940    rts
+0018FA0A                                   941  
+0018FA0A                                   942    *********************************************************************
+0018FA0A                                   943    * clrNewBuf
+0018FA0A                                   944    * 
+0018FA0A                                   945    * If the active buffer is "new" (putpos is zero), clears its contents.
+0018FA0A                                   946    * 
+0018FA0A                                   947    * Arguments:
+0018FA0A                                   948    *
+0018FA0A                                   949    * Trashes:
+0018FA0A                                   950    *   D0, D1
+0018FA0A                                   951    *   A0
+0018FA0A                                   952    *
+0018FA0A                                   953    *********************************************************************
+0018FA0A                                   954  
+0018FA0A                                   955  clrNewBuf:
+0018FA0A                                   956    
+0018FA0A                                   957    * Branch if buffer position not zero
+0018FA0A  3038 D4D0                        958    move    (bufPos),d0
+0018FA0E  B07C 0000                        959    cmp     #0,d0
+0018FA12  6600 0008                        960    bne     clnbDone
+0018FA16                                   961      * Clear the active buffer
+0018FA16  61D6                             962      bsr     getActBuffer
+0018FA18  6100 0004                        963      bsr     clrBuffer
+0018FA1C                                   964    
+0018FA1C                                   965  clnbDone:
+0018FA1C                                   966  
+0018FA1C  4E75                             967    rts
+0018FA1E                                   968  
+0018FA1E                                   969    *********************************************************************
+0018FA1E                                   970    * clrBuffer
+0018FA1E                                   971    * 
+0018FA1E                                   972    * Clears the given buffer.
+0018FA1E                                   973    * 
+0018FA1E                                   974    * Arguments:
+0018FA1E                                   975    *   D0: Pointer to buffer.
+0018FA1E                                   976    *
+0018FA1E                                   977    * Trashes:
+0018FA1E                                   978    *   D0, D1
+0018FA1E                                   979    *   A0
+0018FA1E                                   980    *
+0018FA1E                                   981    *********************************************************************
+0018FA1E                                   982  
+0018FA1E                                   983  clrBuffer:
+0018FA1E                                   984    
+0018FA1E  2040                             985    move.l  d0,a0
+0018FA20  7000                             986    move.l  #0,d0
+0018FA22  323C 000F                        987    move    #$F,d1
+0018FA26                                   988    
+0018FA26                                   989  clrBufLoop:
+0018FA26  20C0                             990    move.l  d0,(a0)+
+0018FA28  51C9 FFFC                        991    dbra    d1,clrBufLoop
+0018FA2C                                   992    
+0018FA2C  4E75                             993    rts
+0018FA2E                                   994  
+0018FA2E                                   995    *********************************************************************
+0018FA2E                                   996    * updBufPrint
+0018FA2E                                   997    * 
+0018FA2E                                   998    * Updates buffer states following a print.
+0018FA2E                                   999    * 
+0018FA2E                                  1000    * Arguments:
+0018FA2E                                  1001    *
+0018FA2E                                  1002    * Trashes:
+0018FA2E                                  1003    *   D0
+0018FA2E                                  1004    *
+0018FA2E                                  1005    *********************************************************************
+0018FA2E                                  1006  
+0018FA2E                                  1007  updBufPrint:
+0018FA2E                                  1008  
+0018FA2E                                  1009    * Mark active buffer as dirty
+0018FA2E  61AE                            1010    bsr     markActBuffer
+0018FA30                                  1011  
+0018FA30                                  1012    * If active buffer is full, advance to next one
+0018FA30  0C78 0008 D4D0                  1013    cmp     #8,(bufPos)
+0018FA36  6D00 0004                       1014    blt     updbL1
+0018FA3A  61BA                            1015      bsr     advBuffer
+0018FA3C                                  1016      
+0018FA3C                                  1017  updbL1:
+0018FA3C                                  1018    
+0018FA3C  4E75                            1019    rts
+0018FA3E                                  1020  
+0018FA3E                                  1021    *********************************************************************
+0018FA3E                                  1022    * isBufDirty
+0018FA3E                                  1023    * 
+0018FA3E                                  1024    * Returns nonzero if the buffer with index D0 is dirty.
+0018FA3E                                  1025    * 
+0018FA3E                                  1026    * Arguments:
+0018FA3E                                  1027    *   D0: Buffer index (word).
+0018FA3E                                  1028    *
+0018FA3E                                  1029    * Trashes:
+0018FA3E                                  1030    *   D0
+0018FA3E                                  1031    *   A0
+0018FA3E                                  1032    *
+0018FA3E                                  1033    *********************************************************************
+0018FA3E                                  1034  
+0018FA3E                                  1035  isBufDirty:
+0018FA3E                                  1036  
+0018FA3E  41F8 D4C0                       1037    lea     bufDirtyArray,a0
+0018FA42  1030 0000                       1038    move.b  (a0,d0.w),d0
+0018FA46  4E75                            1039    rts
+0018FA48                                  1040  
+0018FA48                                  1041    *********************************************************************
+0018FA48                                  1042    * getNextBuf
+0018FA48                                  1043    * 
+0018FA48                                  1044    * Given a buffer index, returns the next buffer in sequence.
+0018FA48                                  1045    * 0 -> 1 -> 2 -> 0 -> ...
+0018FA48                                  1046    * 
+0018FA48                                  1047    * Arguments:
+0018FA48                                  1048    *   D0: Buffer index.
+0018FA48                                  1049    *
+0018FA48                                  1050    * Trashes:
+0018FA48                                  1051    *   D0
+0018FA48                                  1052    *
+0018FA48                                  1053    *********************************************************************
+0018FA48                                  1054  
+0018FA48                                  1055  getNextBuf:
+0018FA48  5240                            1056    add     #1,d0
+0018FA4A  B07C 0002                       1057    cmp     #2,d0
+0018FA4E  6F00 0006                       1058    ble     gnb1
+0018FA52                                  1059    
+0018FA52  303C 0000                       1060    move    #0,d0
+0018FA56                                  1061    
+0018FA56                                  1062  gnb1:
+0018FA56  4E75                            1063    rts
+0018FA58                                  1064  
+0018FA58                                  1065    *********************************************************************
+0018FA58                                  1066    * transCharBuf
+0018FA58                                  1067    * 
+0018FA58                                  1068    * Transfers the character buffer from RAM to VRAM.
+0018FA58                                  1069    * Does not clear the buffer or alter the put positions.
+0018FA58                                  1070    * 
+0018FA58                                  1071    * Arguments:
+0018FA58                                  1072    *   D0: Index of buffer to transfer.
+0018FA58                                  1073    *
+0018FA58                                  1074    * Trashes:
+0018FA58                                  1075    *   
+0018FA58                                  1076    *********************************************************************
+0018FA58                                  1077  
+0018FA58                                  1078  transCharBuf:
+0018FA58                                  1079  
+0018FA58  48E7 FFFE                       1080    movem.l   d0-d7/a0-a6,-(a7)
+0018FA5C                                  1081    
+0018FA5C                                  1082    * Set up and execute a 0x40-byte (2-pattern) DMA transfer
+0018FA5C                                  1083    
+0018FA5C                                  1084    * get mode set register 2 command from RAM FFFD02
+0018FA5C  3C38 FD02                       1085    move.w  ($FFFFFD02),d6
+0018FA60                                  1086    * set bit 4 (dma enable)
+0018FA60  08C6 0004                       1087    bset    #4,d6
+0018FA64                                  1088    
+0018FA64                                  1089    * prepare for VDP control port access
+0018FA64  4DF9 00C00004                   1090    lea     $C00004,a6
+0018FA6A                                  1091    
+0018FA6A                                  1092    * set up high byte of dma source commands
+0018FA6A  323C 9500                       1093    move.w  #$9500,d1
+0018FA6E  343C 9600                       1094    move.w  #$9600,d2
+0018FA72  363C 9700                       1095    move.w  #$9700,d3
+0018FA76                                  1096    
+0018FA76                                  1097    * get address of source data
+0018FA76                                  1098    * TODO: REMOVE METODO: REMOVE METODO: REMOVE METODO: REMOVE METODO: REMOVE ME
+0018FA76  41F8 D400                       1099    lea     charPutBuf,a0
+0018FA7A                                  1100    
+0018FA7A                                  1101    * stop z80 (in preparation for 68000 freeze during dma)
+0018FA7A  33FC 0100 00A11100              1102    move.w  #$100,$A11100
+0018FA82                                  1103    * set auto data increment to 2
+0018FA82  3CBC 8F02                       1104    move.w  #$8F02,(a6)
+0018FA86                                  1105    * write mode set register 2
+0018FA86  3C86                            1106    move.w  d6,(a6)
+0018FA88                                  1107    
+0018FA88                                  1108    * set dma length to 0x40 (in halved DMA format)
+0018FA88  3CBC 9320                       1109    move.w  #$9320,(A6)
+0018FA8C  3CBC 9400                       1110    move.w  #$9400,(A6)
+0018FA90                                  1111    
+0018FA90                                  1112    * get source data address
+0018FA90  6100 FF18                       1113    bsr     getBuffer
+0018FA94                                  1114    * move for re-copy
+0018FA94  2040                            1115    move.l  d0,a0
+0018FA96                                  1116  *  move.l  #charPutBuf,d0
+0018FA96                                  1117  *  move.l  #$188af0,d0
+0018FA96                                  1118    * halve to match DMA format
+0018FA96  E288                            1119    lsr.l   #1,d0
+0018FA98                                  1120    
+0018FA98                                  1121    * copy each byte to corresponding command and execute it
+0018FA98                                  1122    
+0018FA98                                  1123    * low
+0018FA98  1200                            1124    move.b  d0,d1
+0018FA9A  3C81                            1125    move.w  d1,(a6)
+0018FA9C                                  1126    
+0018FA9C                                  1127    * middle
+0018FA9C  E088                            1128    lsr.l   #8,d0
+0018FA9E  1400                            1129    move.b  d0,d2
+0018FAA0  3C82                            1130    move.w  d2,(a6)
+0018FAA2                                  1131    
+0018FAA2                                  1132    * high
+0018FAA2  E088                            1133    lsr.l   #8,d0
+0018FAA4  1600                            1134    move.b  d0,d3
+0018FAA6                                  1135    * Mask off high bit (mode select)
+0018FAA6  C63C 007F                       1136    and.b   #$7F,d3
+0018FAAA  3C83                            1137    move.w  d3,(a6)
+0018FAAC                                  1138    
+0018FAAC                                  1139    * write FFEE94 and FFEE96 as-is to set dma destination and trigger it
+0018FAAC  3CB8 EE94                       1140    move.w  $FFFFEE94,(a6)
+0018FAB0  3CB8 EE96                       1141    move.w  $FFFFEE96,(a6)
+0018FAB4                                  1142    
+0018FAB4                                  1143    *** This code is probably not necessary, but it's how the original game does
+0018FAB4                                  1144    *** it and I'll take cargo cult programming over obscure hardware bugs
+0018FAB4                                  1145    * get status register
+0018FAB4                                  1146    ctrWLoop:
+0018FAB4  3A16                            1147      move.w  (a6),d5
+0018FAB6                                  1148      * loop until dma finished (if not a 68k copy)
+0018FAB6  0805 0001                       1149      btst    #1,d5
+0018FABA  66F8                            1150      bne.s   ctrWLoop
+0018FABC                                  1151    
+0018FABC                                  1152    * restore original mode set register 2
+0018FABC  3CB8 FD02                       1153    move.w  $FFFFFD02,(a6)
+0018FAC0                                  1154    
+0018FAC0                                  1155    *** This code is probably not necessary either
+0018FAC0                                  1156    * do dma again ... except it won't work because we just disabled it
+0018FAC0  3CB8 EE94                       1157    move.w  $FFFFEE94,(a6)
+0018FAC4  3CB8 EE96                       1158    move.w  $FFFFEE96,(a6)
+0018FAC8                                  1159    * re-copy the first word of the already-transferred pattern data (first 4
+0018FAC8                                  1160    * pixels) to the VDP data port after performing the dma
+0018FAC8                                  1161    * isn't this only a problem with the sega cd?
+0018FAC8  3D50 FFFC                       1162    move.w  (a0),-4(a6)
+0018FACC                                  1163    
+0018FACC                                  1164    * restart z80
+0018FACC  33FC 0000 00A11100              1165    move.w  #0,$A11100
+0018FAD4                                  1166    
+0018FAD4  4CDF 7FFF                       1167    movem.l   (a7)+,d0-d7/a0-a6
+0018FAD8  4E75                            1168    rts
+0018FADA                                  1169  
+0018FADA                                  1170    *********************************************************************
+0018FADA                                  1171    * clearCharBuf
+0018FADA                                  1172    * 
+0018FADA                                  1173    * Clears the character buffer and resets the local put position.
+0018FADA                                  1174    * The VRAM put position is not affected.
+0018FADA                                  1175    * 
+0018FADA                                  1176    * Arguments:
+0018FADA                                  1177    *
+0018FADA                                  1178    * Trashes:
+0018FADA                                  1179    *   D0, D1
+0018FADA                                  1180    *   A0
+0018FADA                                  1181    *
+0018FADA                                  1182    *********************************************************************
+0018FADA                                  1183  
+0018FADA                                  1184  clearCharBuf:
+0018FADA                                  1185    
+0018FADA                                  1186    * Zero the character buffer
+0018FADA                                  1187  *  lea     charPutBuf,a0
+0018FADA                                  1188  *  move    #cpClrSize,d1
+0018FADA                                  1189  *  move.l  #0,d0
+0018FADA                                  1190  *  ccbLoop:
+0018FADA                                  1191  *    move.l  d0,(a0)+
+0018FADA                                  1192  *    dbra    d1,ccbLoop
+0018FADA                                  1193      
+0018FADA                                  1194    * reset put position
+0018FADA                                  1195  *  move    d0,charPutPos
+0018FADA                                  1196    
+0018FADA                                  1197  *  rts
+0018FADA                                  1198  
+0018FADA                                  1199    *********************************************************************
+0018FADA                                  1200    * setVramCom
+0018FADA                                  1201    * 
+0018FADA                                  1202    * Resets the VRAM put command (EE94) from current values.
+0018FADA                                  1203    * 
+0018FADA                                  1204    * Arguments:
+0018FADA                                  1205    *
+0018FADA                                  1206    * Trashes:
+0018FADA                                  1207    *   D0, D1
+0018FADA                                  1208    *
+0018FADA                                  1209    *********************************************************************
+0018FADA                                  1210  
+0018FADA                                  1211  setVramCom:
+0018FADA                                  1212  
+0018FADA                                  1213    * get current vram pos
+0018FADA  2038 EE9C                       1214    move.l  (textPrintVramPos),d0
+0018FADE                                  1215    
+0018FADE                                  1216    * get base command position
+0018FADE                                  1217    * (treat as 32-bit, but since it isn't 32-bit aligned, we have to
+0018FADE                                  1218    * read the halves individually)
+0018FADE                                  1219  *  move.l  (baseTextPrintVramPos),d1
+0018FADE  3238 EEAA                       1220    move.w  (hiBaseTextPrintVramPos),d1
+0018FAE2  4841                            1221    swap    d1
+0018FAE4  3238 EEAC                       1222    move.w  (loBaseTextPrintVramPos),d1
+0018FAE8                                  1223    
+0018FAE8                                  1224    * add updated position
+0018FAE8                                  1225  *  swap    d0
+0018FAE8                                  1226  *  move.w  #0,d0
+0018FAE8  D280                            1227    add.l   d0,d1
+0018FAEA                                  1228    
+0018FAEA                                  1229    * save
+0018FAEA  21C1 EE94                       1230    move.l  d1,(textDmaCommand)
+0018FAEE                                  1231    
+0018FAEE  4E75                            1232    rts
+0018FAF0                                  1233  
+0018FAF0                                  1234    *********************************************************************
+0018FAF0                                  1235    * incVramPos
+0018FAF0                                  1236    * 
+0018FAF0                                  1237    * Advances the VRAM put position by a pattern column.
+0018FAF0                                  1238    * 
+0018FAF0                                  1239    * Arguments:
+0018FAF0                                  1240    *
+0018FAF0                                  1241    * Trashes:
+0018FAF0                                  1242    *   D0
+0018FAF0                                  1243    *
+0018FAF0                                  1244    *********************************************************************
+0018FAF0                                  1245  
+0018FAF0                                  1246  incVramPos:
+0018FAF0                                  1247  
+0018FAF0  48A7 4000                       1248    movem   d1,-(a7)
+0018FAF4                                  1249  
+0018FAF4                                  1250    * get current vram pos
+0018FAF4                                  1251    * (word access intentional -- lower half isn't important for us)
+0018FAF4  3038 EE9C                       1252    move.w  (textPrintVramPos),d0
+0018FAF8                                  1253    
+0018FAF8                                  1254    * add column width
+0018FAF8  0640 0040                       1255    add.w   #cpSize,d0
+0018FAFC                                  1256    
+0018FAFC                                  1257    * save
+0018FAFC  31C0 EE9C                       1258    move.w  d0,textPrintVramPos
+0018FB00                                  1259    
+0018FB00                                  1260    * get base command position
+0018FB00  2238 EEAA                       1261    move.l  (baseTextPrintVramPos),d1
+0018FB04                                  1262    
+0018FB04                                  1263    * add updated position
+0018FB04  4840                            1264    swap    d0
+0018FB06  303C 0000                       1265    move.w  #0,d0
+0018FB0A  D280                            1266    add.l   d0,d1
+0018FB0C                                  1267    
+0018FB0C                                  1268    * save
+0018FB0C  21C1 EE94                       1269    move.l  d1,textDmaCommand
+0018FB10                                  1270    
+0018FB10  4C9F 0002                       1271    movem   (a7)+,d1
+0018FB14  4E75                            1272    rts
+0018FB16                                  1273  
+0018FB16                                  1274    *********************************************************************
+0018FB16                                  1275    * transferCharData
+0018FB16                                  1276    * 
+0018FB16                                  1277    * Transfers a specified number of pixel columns to a buffer.
+0018FB16                                  1278    * 
+0018FB16                                  1279    * Arguments:
+0018FB16                                  1280    *   D0: Address of destination buffer.
+0018FB16                                  1281    *   D3: srcPixPos -- Starting offset, in pixels, in source pattern
+0018FB16                                  1282    *       data.
+0018FB16                                  1283    *   D5: Pointer to base position of source character's pattern data.
+0018FB16                                  1284    *   D7: Width, in pixels, of transfer.
+0018FB16                                  1285    *
+0018FB16                                  1286    * Trashes:
+0018FB16                                  1287    *   D0, D1, D2
+0018FB16                                  1288    *
+0018FB16                                  1289    *********************************************************************
+0018FB16                                  1290    
+0018FB16                                  1291  transferCharData:
+0018FB16                                  1292  
+0018FB16  48E7 0A00                       1293    movem.l d4/d6,-(a7)
+0018FB1A                                  1294    
+0018FB1A                                  1295    * Save destination address
+0018FB1A  2C00                            1296    move.l  d0,d6
+0018FB1C                                  1297    
+0018FB1C                                  1298    * Get pixel putpos in dst
+0018FB1C  3838 D4D0                       1299    move    (bufPos),d4
+0018FB20  48C4                            1300    ext.l   d4
+0018FB22                                  1301    * Convert pixel to absolute offset
+0018FB22  2004                            1302    move.l  d4,d0
+0018FB24  6100 00B2                       1303    bsr     pixToVramPos
+0018FB28                                  1304    * Add buffer base offset
+0018FB28  D086                            1305    add.l   d6,d0
+0018FB2A                                  1306    * Save to register
+0018FB2A  2240                            1307    move.l  d0,a1
+0018FB2C                                  1308    
+0018FB2C                                  1309    * The transfer is split into two parts in order to handle cases where
+0018FB2C                                  1310    * the full transfer straddles a pattern-column boundary in the source
+0018FB2C                                  1311    * data.
+0018FB2C                                  1312    
+0018FB2C                                  1313    * First transfer width: 8 - (srcPixelPos % 8)
+0018FB2C  3203                            1314    move    d3,d1
+0018FB2E  C27C 0007                       1315    and     #$0007,d1
+0018FB32  343C 0008                       1316    move    #8,d2
+0018FB36  9441                            1317    sub     d1,d2
+0018FB38                                  1318    * if calculated size exceeds remaining columns, only use those left
+0018FB38  B447                            1319    cmp     d7,d2
+0018FB3A  6F00 0004                       1320    ble     tcBra1
+0018FB3E  3407                            1321    move    d7,d2
+0018FB40                                  1322  tcBra1:
+0018FB40                                  1323    
+0018FB40  48C2                            1324    ext.l   d2
+0018FB42                                  1325    
+0018FB42                                  1326    * Derive pointer to the target source character data
+0018FB42                                  1327    * convert srcPixPos to VRAM format
+0018FB42  2003                            1328    move.l  d3,d0
+0018FB44  6100 0092                       1329    bsr     pixToVramPos
+0018FB48                                  1330    * get base position in source and add offset
+0018FB48  2205                            1331    move.l  d5,d1
+0018FB4A  D280                            1332    add.l   d0,d1
+0018FB4C                                  1333    
+0018FB4C                                  1334    * a1 = dst pointer
+0018FB4C                                  1335    * d1 = source pointer
+0018FB4C                                  1336    * d2 = firstTransferWidth
+0018FB4C                                  1337    * d3 = srcPixPos
+0018FB4C                                  1338    * d4 = dstPixPos
+0018FB4C                                  1339    
+0018FB4C  6100 0026                       1340    bsr colTransferCharData
+0018FB50                                  1341    
+0018FB50                                  1342    * Advance src pos (may cross pattern-column boundary!!)
+0018FB50                                  1343    * Corrections are applied below.
+0018FB50  D282                            1344    add.l   d2,d1
+0018FB52                                  1345    
+0018FB52                                  1346    * Advance dst pos (should never cross boundary)
+0018FB52  D882                            1347    add.l   d2,d4
+0018FB54                                  1348    
+0018FB54                                  1349    * Second transfer width: (transferWidth - firstTransferWidth)
+0018FB54  3007                            1350    move    d7,d0
+0018FB56  9042                            1351    sub     d2,d0
+0018FB58  3400                            1352    move    d0,d2
+0018FB5A                                  1353    
+0018FB5A  48C2                            1354    ext.l   d2
+0018FB5C                                  1355    
+0018FB5C                                  1356    * if no data remains to be transferred, we're done
+0018FB5C  B47C 0000                       1357    cmp     #0,d2
+0018FB60  6700 000C                       1358    beq     tcdDone
+0018FB64                                  1359    
+0018FB64                                  1360    * if a second transfer is necessary, we need to advance to the next
+0018FB64                                  1361    * source pattern column
+0018FB64  0681 0000003C                   1362    add.l   #60,d1
+0018FB6A                                  1363    
+0018FB6A  6100 0008                       1364    bsr colTransferCharData
+0018FB6E                                  1365    
+0018FB6E                                  1366  tcdDone:
+0018FB6E  4CDF 0050                       1367    movem.l (a7)+,d4/d6
+0018FB72  4E75                            1368    rts
+0018FB74                                  1369  
+0018FB74                                  1370    *********************************************************************
+0018FB74                                  1371    * colTransferCharData
+0018FB74                                  1372    * 
+0018FB74                                  1373    * Transfers a specified number of pixel columns to target.
+0018FB74                                  1374    * 
+0018FB74                                  1375    * Arguments:
+0018FB74                                  1376    *   A1: Destination pointer.
+0018FB74                                  1377    *   D1: Source pointer.
+0018FB74                                  1378    *   D2: Transfer width in pixels.
+0018FB74                                  1379    *   D3: Starting offset, in pixels, in source data.
+0018FB74                                  1380    *   D4: Target offset, in pixels, in destination.
+0018FB74                                  1381    *
+0018FB74                                  1382    * Trashes:
+0018FB74                                  1383    *   D0
+0018FB74                                  1384    *   A0, A1
+0018FB74                                  1385    *
+0018FB74                                  1386    *********************************************************************
+0018FB74                                  1387    
+0018FB74                                  1388  colTransferCharData:
+0018FB74                                  1389  
+0018FB74  48E7 7F38                       1390    movem.l a2-a4/d1-d7,-(a7)
+0018FB78                                  1391    
+0018FB78                                  1392    * prep source pointer
+0018FB78  2041                            1393    move.l  d1,a0
+0018FB7A                                  1394    
+0018FB7A                                  1395    * prep destination pointer copy
+0018FB7A  2449                            1396    move.l  a1,a2
+0018FB7C                                  1397    
+0018FB7C                                  1398    * copy all rows
+0018FB7C  303C 000F                       1399    move    #15,d0
+0018FB80                                  1400  colTrLoop:
+0018FB80                                  1401    
+0018FB80                                  1402    * save initial src/dst pixel positions
+0018FB80                                  1403  *  movem.l d3-d4,-(a7)
+0018FB80  2643                            1404    move.l  d3,a3
+0018FB82  2844                            1405    move.l  d4,a4
+0018FB84                                  1406    
+0018FB84                                  1407  *  move.l  d4,a1
+0018FB84  224A                            1408    move.l  a2,a1
+0018FB86                                  1409    
+0018FB86                                  1410    * copy all pixels
+0018FB86  3A02                            1411    move    d2,d5
+0018FB88  5345                            1412    sub     #1,d5
+0018FB8A                                  1413    colTrILoop:
+0018FB8A                                  1414      
+0018FB8A                                  1415      colTrIDoT:
+0018FB8A                                  1416        
+0018FB8A                                  1417      * get source byte
+0018FB8A                                  1418  *    move.b    (a0),d6
+0018FB8A                                  1419      
+0018FB8A                                  1420      * fetch a nybble based on parity of source pixel pos
+0018FB8A                                  1421      * even (first) = high nybble
+0018FB8A                                  1422      * odd (second) = low nybble
+0018FB8A  0803 0000                       1423      btst    #0,d3
+0018FB8E  6700 000C                       1424      beq     srcParEven
+0018FB92                                  1425      
+0018FB92                                  1426      srcParOdd:
+0018FB92                                  1427        * get source byte (and advance position)
+0018FB92  1C18                            1428        move.b    (a0)+,d6
+0018FB94                                  1429        * low nybble only
+0018FB94  CC3C 000F                       1430        and.b     #$0F,d6
+0018FB98                                  1431        
+0018FB98  6000 000A                       1432        bra srcParDone
+0018FB9C                                  1433        
+0018FB9C                                  1434      srcParEven:
+0018FB9C                                  1435        * get source byte (and do not advance position; next nybble to
+0018FB9C                                  1436        * follow)
+0018FB9C  1C10                            1437        move.b    (a0),d6
+0018FB9E                                  1438        * high nybble only
+0018FB9E  CC3C 00F0                       1439        and.b     #$F0,d6
+0018FBA2                                  1440        * shift to low position
+0018FBA2  E80E                            1441        lsr.b     #4,d6
+0018FBA4                                  1442      
+0018FBA4                                  1443      srcParDone:
+0018FBA4                                  1444      
+0018FBA4                                  1445      * get destination byte
+0018FBA4  1E11                            1446      move.b      (a1),d7
+0018FBA6                                  1447      
+0018FBA6                                  1448      * check destination parity
+0018FBA6  0804 0000                       1449      btst    #0,d4
+0018FBAA  6700 000A                       1450      beq     dstParEven
+0018FBAE                                  1451        
+0018FBAE                                  1452      * target low nybble of dst
+0018FBAE                                  1453      dstParOdd:
+0018FBAE                                  1454        
+0018FBAE                                  1455        * clear low nybble of dst
+0018FBAE                                  1456        * (not needed -- cleared before transfer)
+0018FBAE                                  1457  *      and.b   #$F0,d7
+0018FBAE                                  1458        * OR with src
+0018FBAE  8E06                            1459        or.b    d6,d7
+0018FBB0                                  1460        
+0018FBB0                                  1461        * move to destination (and advance position)
+0018FBB0  12C7                            1462        move.b    d7,(a1)+
+0018FBB2                                  1463        
+0018FBB2  6000 0008                       1464        bra dstParDone
+0018FBB6                                  1465      
+0018FBB6                                  1466      * target high nybble of dst
+0018FBB6                                  1467      dstParEven:
+0018FBB6                                  1468        
+0018FBB6                                  1469        * clear high nybble of dst
+0018FBB6                                  1470        * (not needed -- cleared before transfer)
+0018FBB6                                  1471  *        and.b   #$0F,d7
+0018FBB6                                  1472        * shift src to high nybble
+0018FBB6  E90E                            1473        lsl.b    #4,d6
+0018FBB8                                  1474        * OR with src
+0018FBB8  8E06                            1475        or.b    d6,d7
+0018FBBA                                  1476        
+0018FBBA                                  1477        * move to destination (and do not advance position; low nybble to
+0018FBBA                                  1478        * follow)
+0018FBBA  1287                            1479        move.b    d7,(a1)
+0018FBBC                                  1480        
+0018FBBC                                  1481      dstParDone:
+0018FBBC                                  1482      
+0018FBBC                                  1483      * increment pixel positions
+0018FBBC  5243                            1484      add       #1,d3
+0018FBBE  5244                            1485      add       #1,d4
+0018FBC0                                  1486        
+0018FBC0                                  1487      * get byte
+0018FBC0                                  1488  *    move.b  (a0)+,d0
+0018FBC0                                  1489      * copy to destination
+0018FBC0                                  1490  *    move.b  d0,(a1)+
+0018FBC0                                  1491      
+0018FBC0                                  1492      * iterate over pixels in row
+0018FBC0  51CD FFC8                       1493      dbra    d5,colTrILoop
+0018FBC4                                  1494    
+0018FBC4                                  1495    * move to next source row
+0018FBC4  5881                            1496    add.l   #4,d1
+0018FBC6  2041                            1497    move.l  d1,a0
+0018FBC8                                  1498    * move to next dst row
+0018FBC8  588A                            1499    add.l   #4,a2
+0018FBCA                                  1500      
+0018FBCA                                  1501    * reset pixel positions
+0018FBCA                                  1502  *  movem.l (a7)+,d3-d4
+0018FBCA  260B                            1503    move.l  a3,d3
+0018FBCC  280C                            1504    move.l  a4,d4
+0018FBCE                                  1505    
+0018FBCE                                  1506    * iterate over rows
+0018FBCE  51C8 FFB0                       1507    dbra    d0,colTrLoop
+0018FBD2                                  1508    
+0018FBD2  4CDF 1CFE                       1509    movem.l (a7)+,a2-a4/d1-d7
+0018FBD6  4E75                            1510    rts
+0018FBD8                                  1511  
+0018FBD8                                  1512    *********************************************************************
+0018FBD8                                  1513    * pixToVramPos
+0018FBD8                                  1514    * 
+0018FBD8                                  1515    * Converts a pixel column value to tile-address format.
+0018FBD8                                  1516    * 
+0018FBD8                                  1517    * Arguments:
+0018FBD8                                  1518    *   D0: A pixel column value
+0018FBD8                                  1519    *
+0018FBD8                                  1520    * Trashes:
+0018FBD8                                  1521    *   D0, D1
+0018FBD8                                  1522    *
+0018FBD8                                  1523    *********************************************************************
+0018FBD8                                  1524    
+0018FBD8                                  1525  pixToVramPos:
+0018FBD8                                  1526    
+0018FBD8                                  1527    * save original value
+0018FBD8  2200                            1528    move.l d0,d1
+0018FBDA                                  1529    
+0018FBDA                                  1530    * result = ((x / 8) * 8 * 16) + ((x mod 8) / 2)
+0018FBDA  E688                            1531    lsr.l  #3,d0
+0018FBDC  EF88                            1532    lsl.l  #7,d0
+0018FBDE  0281 00000007                   1533    andi.l #7,d1
+0018FBE4  E289                            1534    lsr.l  #1,d1
+0018FBE6  D081                            1535    add.l  d1,d0
+0018FBE8  4E75                            1536    rts
+0018FBEA                                  1537  
+0018FBEA                                  1538    *********************************************************************
+0018FBEA                                  1539    * vramToPixPos
+0018FBEA                                  1540    * 
+0018FBEA                                  1541    * Converts a tile-address value to pixel column format.
+0018FBEA                                  1542    * 
+0018FBEA                                  1543    * Arguments:
+0018FBEA                                  1544    *   D0: A tile-address value
+0018FBEA                                  1545    *
+0018FBEA                                  1546    * Trashes:
+0018FBEA                                  1547    *   D0, D1
+0018FBEA                                  1548    *
+0018FBEA                                  1549    *********************************************************************
+0018FBEA                                  1550    
+0018FBEA                                  1551  *vramToPixPos:
+0018FBEA                                  1552    
+0018FBEA                                  1553    * save original value
+0018FBEA                                  1554  *  move.l d0,d1
+0018FBEA                                  1555    
+0018FBEA                                  1556    * result = (x / 8) + ((x mod 4) * 2)
+0018FBEA                                  1557  *  lsr.l  #4,d0
+0018FBEA                                  1558  *  andi.l #3,d1
+0018FBEA                                  1559  *  lsl.l  #1,d1
+0018FBEA                                  1560  *  add.l  d1,d0
+0018FBEA                                  1561  *  rts
+0018FBEA                                  1562    
+0018FBEA                                  1563    
+
+No errors detected
+No warnings generated

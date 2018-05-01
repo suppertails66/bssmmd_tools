@@ -1,0 +1,498 @@
+
+font starts at 0x188970
+  - uncompressed, 4 tiles per character, in order UL, LL, UR, LR
+  - 180 characters total = 0x5A00 bytes
+  - う at 0x188af0
+    
+script pointers are at 0x1af7e-0x1b0a5? (74 total?)
+  - contains:
+    - 4b base vram position (32-bit vdp command format)
+    - 2b sprite base position -- EEAE; +0x40 to EEB4
+      - read at be4c
+      - written to f98c -- part of sprite table
+      - defines starting index of sprites used for text
+    - 2b sprite position table offset?
+      - used to look up some stuff from table at bea0 -- see bb94
+      - effectively:
+        - 0000 = normal gameplay (128px wide)
+        - 000A = ? not used?
+        - 0014 = intro/ending (224px wide)
+        - 001E = ? not used?
+    - remainder is standard script data
+  
+code to fetch and execute text script commands starts at BC0E
+  logic:
+    * fetch a word
+    * if positive, it's a character print "command"
+    * if negative, it's a special opcode
+  standard character printing:
+    * Each command is two words:
+     1. The first word is an offset into the font data at 0x188970. Add it to
+        that, then set up a 0x80-byte DMA copy to be executed during vblank.
+     2. The second word is the delay in frames before the next script event
+        executes. (yes, this is specified on a character-by-character basis;
+        it's almost if not always 4)
+  opcode FFFE: end of script
+  opcode FFFC: linebreak and print character
+    - 2b character offset
+    - 2b delay
+  opcode FFFA: reset printing for new "box"?
+    - no parameters, hardcoded delay of 0x10
+  opcode FFF8: change portrait?
+    - 2b portait code
+      - positive words indicate an uncompressed portrait should be loaded to
+        VRAM for display
+             0  luna
+           200  mars' crow
+           400  artemis
+           600  jadeite
+           800  kunzite
+           A00  nephrite
+           C00  beryl?
+           E00  tuxedo kamen
+          1000  zoisite
+          1200  unused alt zoisite portrait
+          1400  unused alt zoisite portrait
+          1600  endymion
+          1800  queen metallia
+          1A00  manegin
+      - negative words indicate the player character's pre-loaded portrait
+        should be displayed.
+        oddly, the scripts actually use unique IDs for each character, even
+        though this information is ignored by the game:
+          FFFF  moon
+          F800  mercury
+          F000  mars
+          E800  jupiter
+          E000  venus
+    - 2b delay
+  opcode FFF6:
+    - 2b delay
+  opcode FFF4:
+    - 2b ?
+    - after executing and advancing script position, an FFFA operation is
+      forcibly executed!
+  
+for opening lines as moon:
+  - first byte of う's pixel data (0x188af0) read at 0xC160
+  - the source address for dma transfer is set at bc3c
+  - 1b4fe = raw font table address for う / part of text? (0x180)
+    - ~1b0a6-1f923 = text strings?
+    - pointers into this at 1af7e-1b00d?
+  - moon stage 1 conversation starts at 1b4ce?
+  
+stuff:
+  * title screen
+    - logo and text:  0x1b4c00
+      - tilemap:      0x1b6e90
+    - will have to do something special about the cycling palette (not all
+      colors are unique)
+      - palette: 0x1b7440
+  * options screen
+    - graphics:       0x19dd10
+    - tilemap:        0x19e4c0
+    - uncompressed tilemaps for difficulty labels start at 0x13086
+      - 0x28 bytes each -- 10 tiles wide, 2 high
+      - order is hard, normal, easy
+      - digits at 0x12C3C
+    - we'll have to do something about the artemis cursor too
+    - note: tiles can be tacked on -- nothing loaded after this
+      - watch out for the artemis cursor getting copied to 0x100 so it can be
+        arranged as a sprite
+  * player select
+    - graphics:       0x1b74c0
+    - tilemap:        0x1ba510
+    - this can't be edited normally due to tiling tricks with the overlapping
+      character boxes -- the text tiles are right at the end and nothing
+      is loaded after this graphic, so just tack on extra stuff as needed
+  * eyecatches
+    - stage labels:   0x19e680
+      - uncompressed tilemaps for "STAGE X" stuff start at 0x12480
+        - 16b header
+          - 8b = starting address, with 0x4000???
+          - ???
+      - ffff = terminator for tilemap data
+      - maps for stage names start at 0x1269c
+    - stage label tilemap pointers: 0x12134-0x12147?
+      - 12630
+      - 125c4
+      - 12558
+      - 124ec
+      - 12480
+    - stage name tilemap pointers: 0x12164-0x12177?
+      - 128a6
+      - 127bc
+      - 12762
+      - 12708
+      - 1269c
+    - small logo:     0x1a99c0
+      - this is displayed with sprites -- basically just edit as a bitmap
+        - same cycling palette restrictions apply
+      - palette: 0x1acf00
+  * results screen
+    - text:           0x1a8d60
+      - tilemaps for various stuff (names, labels, etc.): ~0x10e30
+        - possibly something also at 0x19616???
+      - format appears to be 2b width followed by map data
+      - height is implicitly 2?
+        - 0x10e2e: clear time
+          - width: 0xc
+          - pointer: 0x108b0
+        - 0x10e60: damage taken?
+          - width: 0xe
+          - pointer: 0x109a8
+        - 0x10e9a: score?
+          - width: 0x8
+          - pointer: 0x10a68
+        - 0x10ebc: overall score?
+          - width: 0x10
+          - pointer: 0x10b5c
+        - 0x10efe: "sailor moon"
+          - width: 0x14
+          - pointer: 0x10884
+        - 0x10f50: ?
+          - width: 0x14
+          - pointer: 0x10888
+        - 0x10fa2: ?
+          - width: 0x14
+          - pointer: 0x1088C
+        - 0x10ff4: ?
+          - width: 0x14
+          - pointer: 0x10890
+        - 0x11046: ?
+          - width: 0x14
+          - pointer: 0x10894
+        - 0x11098: ?
+          - width: 0x4
+          - pointer: 0x108c2
+        - 0x110aa: ?
+          - width: 0x4
+          - pointer: 0x109ba
+        - 0x110bc: ?
+          - width: 0x4
+          - pointer: 0x10a78
+        - starting at 0x110fa: digits 0-9, followed by space (each 0xa bytes)
+          - pointers: 0x110ce-0x110f9
+          - 110fa, 11104, 1110e, 11118, 11122, 1112c,
+            11136, 11140, 1114a, 11154, 1115e
+        - IN RAW FORMAT (no width marker, implicitly 2x2):
+          - 0x11168: grade letters (A-E), each 0x8 bytes
+  * credits
+    - standard font at 0x188970 is loaded to VRAM 0x0 and used
+      with the tilemap at 0x1883a0
+  * incidental text during gameplay? (kanji on storefronts, etc.)
+    - i think this is only in stage 1
+      - 1-1 graphics: 1d0000
+      - 1-1 tilemaps: 1c01f0? (columnal format?)
+        - looks like 16x16 metatile definitions
+          - UL, UR, DL, DR
+        - this goes to 0xFF5000
+        
+tilemapper
+  - take multiple images and turn into a single set of graphics
+    plus a tilemap for each image
+  - read input scripts that can:
+    * specify input/output files
+      * specify tilemap width/height for each
+      * x/y offset for input tilemaps?
+      * palette
+    * blacklist certain tiles (e.g. if some sprite graphic will be patched
+      in at a specific location)
+    * enforce size limitations
+    * force output graphic to be a certain length
+    * handle tile priority?
+    * flag special tilemap formats?
+specialmapper
+  - like above, but for special format used by eyecatches, etc.
+  - specify destination x/y in script file
+  - auto-copy values from existing data, or specify in script file?
+datinsr
+  - read scripts specify: files to insert, free space in target file,
+    original location, pointers to update, etc.
+  !!! ENFORCE BYTE ALIGNMENT !!!
+  
+00 98  00 9b
+00 9A  01 44
+
+144 = 0xFF5A20
+  - read at 0x1864
+    - indexed from FF7000 (+5D4)
+      - indexed from FF6000 (+96)
+  - written to FFF814
+
+
+FF1000 = ?
+  - 1c0040
+FF3000 = ?
+  - 1f93e0
+FF5000 = metatile definitions
+  - 1c01f0
+FF6000 = meta2tile level(?) layout
+  - 1c0da0
+  - each word is an index into meta2tile definitions at FF7000
+FF7000 = meta2tile definitions
+  - 1c0e10
+  - 128x128px meta2tiles composed of 16x16px metatiles
+  - 0x80 bytes per meta2tile
+    - series of words (left to right?)
+    - each word is index into metatile definitions at FF5000
+      - "safety first" is around 0x500
+        - relevant indices: 490, 498, 4A0, 4A8
+FFB000 = ?
+  - 1c0cc0
+  
+what we need to do:
+  * modify vblank DMA transfer handler routine for font characters at C0FE to
+    look up character width from a table and resize the DMA transfer based on
+    it
+    - relevant lines: C12A
+  * modify intro script handlers (B82A) to look up character advance width from
+    a table and use it instead of a hardcoded width
+    - routine BB0A
+  * modify gameplay script handlers (BBDC) to look up character advance width
+    from a table and use it instead of a hardcoded width
+    - routine BE7A
+  * insert new font somewhere and convert scripts to use it
+  
+graphic compression:
+  example: 1b0000
+  1: literal byte
+  01: long lookback
+    - read 2 bytes from source
+    - make byte2 low byte of 0xFFFF
+    - shift result left 5 bits
+    - make byte1 low byte of that
+    - get (byte2 & 0x07)
+      - if zero, the run length is given by the next byte in the source data
+      - otherwise, this value is the run length
+  00: short lookback
+    - fetch the next 2 command bits to form a 2-bit number (first fetched
+      is high bit). add 1 to get repeat count
+    - read next byte from source and make low byte of 0xFF to get lookback
+      distance
+  
+lots of free space:
+  * 0x18F800 -- 0x800 bytes
+
+routines:
+  
+  byteToVramPos
+  vramToBytePos
+  transferCharDataCol(srcVramPos, dstVramPos, transferWidth)
+  transferCharData(src, dst, byteWidth)
+  copyCharToVram(dstVramBasePos, srcCharBaseOffset)
+  
+
+// guarantees:
+//  * srcVramPos + transferWidth must not cross a pattern column boundary
+//  * dstVramPos + transferWidth must not cross a pattern column boundary
+void transferCharDataCol(srcVramPos, dstVramPos, transferWidth) {
+  
+  // copy transferWidth bytes
+  
+  // move to next row and repeat (add 64 to src/dst)
+  
+  // do this 16 times
+  
+}
+ 
+// srcBytePos: offset into font data, in "width bytes" (pixels / 2)
+// dstVramPos: VRAM address to write to
+// transferWidth: number of "width bytes" to transfer
+// 
+// guarantees:
+// * the transferWidth may not cross an 8-pixel (4-byte) VRAM boundary
+//  * as a corollary, transferWidth may not exceed 4
+void transferCharData(srcCharBaseOffset, srcBytePos, dstVramPos, transferWidth) {
+  
+  // dstVramPos _must not_ cross a column boundary!
+  
+  // split the transfer into two parts
+  
+  // transfer 1: start pos to source pattern boundary
+  int firstTransferWidth = transferWidth - (srcBytePos % 4)
+  if (firstTransferWidth <= 0)
+    firstTransferWidth = transferWidth
+  // transfer 2: anything left
+  int secondTransferWidth = transferWidth - firstTransferWidth
+  
+  if (firstTransferWidth > 0)
+    transferCharDataCol(srcCharBaseOffset + byteToVramPos(srcBytePos),
+                        dstVramPos,
+                        firstTransferWidth)
+    
+  if (secondTransferWidth > 0)
+    transferCharDataCol(srcCharBaseOffset
+                          + byteToVramPos(srcBytePos + firstTransferWidth),
+                        dstVramPos + firstTransferWidth,
+                        secondTransferWidth)
+  
+  
+}
+  
+void copyCharToVram(srcCharBaseOffset, dstVramBasePos) {
+  int dstByteBasePos = vramToBytePos(dstVramBasePos)
+  
+  // index of character, needed to look up width info
+  int srcCharIndex = srcCharOffset / 128
+  
+  int srcCharByteW = getWidthInfo(srcCharIndex)
+  int srcCharByteAdvanceW = getAdvanceWidthInfo(srcCharIndex)
+  
+  // get/put pos
+  int bytePos = 0
+  
+  // initialize
+  int dstVramPos = dstVramBasePos
+  int transferWidth
+  
+  // transfer 1: starting VRAM pos to end of current pattern column
+  
+  transferWidth = 4 - (dstByteBasePos % 4)
+  if (transferWidth > srcCharByteW) transferWidth = srcCharByteW
+  transferCharData(srcCharBaseOffset, bytePos, dstVramPos, transferWidth)
+  
+  // update positions
+  bytePos += transferWidth
+  dstVramPos = byteToVramPos(dstByteBasePos + bytePos)
+  srcCharByteW -= transferWidth
+  if (srcCharByteW <= 0) goto done
+  
+  // transfer 2
+  
+  transferWidth = 4
+  if (transferWidth > srcCharByteW) transferWidth = srcCharByteW
+  transferCharData(srcCharBaseOffset, bytePos, dstVramPos, transferWidth)
+  
+  // update positions
+  bytePos += transferWidth
+  dstVramPos = byteToVramPos(dstByteBasePos + bytePos)
+  srcCharByteW -= transferWidth
+  if (srcCharByteW <= 0) goto done
+  
+  // transfer 3
+  
+  transferWidth = 4
+  if (transferWidth > srcCharByteW) transferWidth = srcCharByteW
+  transferCharData(srcCharBaseOffset, bytePos, dstVramPos, transferWidth)
+  
+  // update positions
+  bytePos += transferWidth
+  dstVramPos = byteToVramPos(dstByteBasePos + bytePos)
+  srcCharByteW -= transferWidth
+  
+  done:
+  
+  // update vram write position
+  dstVramBasePos = byteToVramPos(dstByteBasePos + srcCharByteAdvanceW)
+  
+}
+  
+memory map (regular gameplay):
+  E000: character number during gameplay (see FE88 for values)
+    - change this to affect scripts that play
+  E08B: selected character on player select screen
+    - 00 = moon, 0C = mercury, 10 = jupiter, 04 = venus, 08 = mars
+    - after character select, read at 104A2
+      - gets address from table at 104FA
+      - gets word at that address + 4
+      - writes this value to FE88
+  E050: hp?
+  E150: enemy 0 hp?
+  E250: enemy 1 hp?
+  E350: enemy 2 hp?
+  E450: enemy 3 hp?
+  E339: difficulty on options screen
+    - 0 = hard, 1 = normal, 2 = easy
+  EE80: if bit 1 unset, then before updating text script:
+    get byte at FD35
+    AND with 0x40
+    if result is nonzero, then the countdown timer for script events (EE81) is
+      ignored, and the next script command is immediately executed
+    - also checked at BCCC
+  EE81: countdown timer for next text script event
+    - decremented each frame; next script operation is performed when this
+      rolls past zero
+    - set by each script operation
+  EE82: offset into jump table at C0EC (vblank DMA type)
+    - 0 = nothing
+    - 2 = pending character transfer?
+    - 4 = ?
+    - 6 = pending portrait transfer?
+    - 8 = clear existing dialogue?
+  EE84-EE85: offset into jump table at BBE8 indicating what to do for script
+    updates??
+    i.e. 0002 if a script is running, 0000 otherwise
+  DMA TRANSFER PARAMETERS:
+    EE8C-EE8F: raw address of source data for dma transfer
+      - this is used only to re-write the first word of the source data
+        after doing the transfer -- the actual transfer address is at
+        FFEE91-FFEE93
+    EE91-EE93: dma source address in "halved" dma format (i.e. *FFEE8C / 2)
+    EE94-EE95: dma destination/trigger command, first half
+    EE96-EE97: dma destination/trigger command, second half
+  EE98: pointer to current position in text script
+  EE9C: 32-bit "text position", in raw VDP command format (i.e. highest 2
+    bits are in lowest position)
+    - this is added to the full base command at EEAA-EEAD to get the actual
+      position
+    - 0x00000000-0x03800000 = first line
+    - 0x04000000-0x07800000 = second line
+  EEAA: first half of base command for text dma transfers
+  EEAC: second half of base command for text dma transfers
+    - EEAA and EEAC together are used to compute the destination command
+      for text DMA transfers, which is placed in EE94-EE97
+    - the two highest bits (displaced into lowest position) are ignored when
+      the destination offset is calculated, so the text's allocated VRAM area
+      may not cross a 0x4000-byte boundary (I think?)
+  EEAE: ? see be4c
+  EEB4: ?
+  EEB6: ?
+  FB80: palettes
+    - rotating palette on title screen
+  FD02-FD03: formatted VDP command to set mode set 2 register
+  FE31: selected options on title screen
+    * 00 = start, 01 = options
+  FE88: character (16-bit)
+    * 02 = moon, 04 = mercury 06 = mars, 08 = jupiter, 0A = venus
+  FE8D: difficulty
+    * 0000 = hard, 0002 = normal, 0004 = easy
+
+credits:
+  EEEA = pointer to current row in tilemap (decompressed to RAM FF0000)
+    * code at 15874 ends credits when this becomes >= FF3000
+  orig tilemap is 160 tiles high
+  new: 212 (add D00 to runtime)
+
+intro:
+  * 2598 = sets up initial program state? (at voice clip)
+  * F9D4 = init?
+  * FA5A = ?? "main" loop?
+  * FAAC = voice clip 1 playback update?
+  * FAD0 = voice clip 2 playback update?
+  * FFE098 = pointer to current "update" routine?
+  
+game over/continue:
+  * "continue" text loaded to B000
+    * header: 11bec
+  * "game over" text loaded to B600
+    * header: 11c7c
+
+code:
+  2D62: kosinski decompressor
+    - possibly the only graphics compression used?
+  3104: vblank handler
+  345A: ?
+    - ends up looping over FFE000-FFE600 in 0x100-byte increments and doing
+      stuff (e.g. dma transfers?) based on values
+    - actually this may just be me misinterpreting the call stack
+  A7A6: apply damage to enemy? object?
+  B82A: intro script handler
+  BBDC: gameplay script handler
+  C0FE: vblank DMA handler for font characters?
+    - does a 0x80-byte DMA transfer using parameters at FFEE8C-FFEE97
+  F06A: DMA-format tilemap handler
+  FB82: uses D000+ as source of a 68k->VDP DMA transfer in order to
+        clear portions of VRAM (i.e. this part of memory must be zeroed
+        or visual artifacts may result)
+        

@@ -1,0 +1,40 @@
+
+# Fields marked with "*" are mandatory
+
+[Properties]
+
+# * input palette (four palette lines)
+palette=pal/bssm_title_pal_mod.bin
+
+# * output tile data
+dest=out/grp.bin
+
+# VRAM load address of tile data (default: zero)
+#loadAddr=0x8F60
+loadAddr=0x47B
+
+# minimum number of tiles in output data (default: zero)
+minTiles=0x185
+
+# maximum number of tiles in output data (default: infinite)
+maxTiles=0x185
+
+# list of blacklisted tiles (won't be used)
+# specify range with hyphen
+blacklist=360-363
+
+[Tilemap00]
+
+# * input graphic
+source=gfx_mapped/title.png
+
+# * output tilemap
+dest=out/title_map.bin
+
+# ways to specify priority -- must have exactly one of these
+#
+# tilemap (priority will be copied)
+#copyPriorityMap=in/map.bin
+# blanket 0/1 assignment for entire map
+priority=1
+

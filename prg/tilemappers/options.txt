@@ -1,0 +1,53 @@
+#******************************************************************************
+# Options screen tilemap generator script
+#******************************************************************************
+
+[Properties]
+palette=pal/bssm_options_pal.bin
+dest=out/precmp/options_grp.bin
+loadAddr=0x0
+#minTiles=
+maxTiles=0x100
+#blacklist=
+
+#******************************************************************************
+# Main layout
+#******************************************************************************
+
+[Tilemap00]
+source=rsrc/options/trans/options.png
+dest=out/precmp/options_map.bin
+priority=1
+
+#******************************************************************************
+# Difficulty labels (uncompressed tilemaps)
+#******************************************************************************
+
+# "Hard"
+[Tilemap01]
+source=rsrc/options/trans/hard.png
+dest=out/nocmp/options_hard.bin
+priority=0
+
+# "Normal"
+[Tilemap02]
+source=rsrc/options/trans/normal.png
+dest=out/nocmp/options_normal.bin
+priority=0
+
+# "Easy"
+[Tilemap03]
+source=rsrc/options/trans/easy.png
+dest=out/nocmp/options_easy.bin
+priority=0
+
+#******************************************************************************
+# Digit labels (uncompressed tilemaps)
+#******************************************************************************
+
+[Tilemap04]
+source=rsrc/options/trans/digits.png
+dest=out/nocmp/options_digits.bin
+priority=0
+
+

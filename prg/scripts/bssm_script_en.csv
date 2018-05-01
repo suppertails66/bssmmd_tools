@@ -1,0 +1,1732 @@
+"ScriptStart","0x7D702 0x31A 0x70000083 0xC780 0x14 0x1 0x1B00E",,"----------------------------",,,
+"Text","2 120 -1","NONE","...にくしみエナジーが
+わたしたちを、よみがえらせた
+
+このよにすむ、ひとびと[p40]に
+
+たにんを、にくむこころが
+あるかぎり
+
+わたしはなんどでもよみがえ[p120]る
+
+[s2]　　　クインベリル！
+
+[s4]セーラームーン　おまえたちは
+かつてわが、ダークキングダ[p40]ム
+
+せかいせいふくの、のぞみを
+うちくだいた
+
+おまえたちはにっくきあいて
+
+かならず、みなごろしに
+してくれる
+
+やだやだぁ！！　みんな
+よみがえっちゃったの？！
+
+そんなのやだぁ！[s120]！[p120]　","We have been resurrected by the hateful energy of this world.
+
+So long as humankind has hate within their hearts, we shall never die![s20]  
+
+[s1]                    Queen Beryl!
+
+[s2][p40]Sailor Moon! You and your friends once foiled the Dark Kingdom's plans
+
+for world domination.
+
+You are our greatest enemy, and we shall slaughter you!
+
+They've all been resurrected?
+
+[p120]N-no way![s120]!  ","Intro, part 1. This is dialogue between Beryl and Moon; it's the only time in the game that characters exchange dialogue without portraits. All these lines are said by Beryl except the following by Moon:
+
+　　　クインベリル！
+
+やだやだぁ！！　みんな
+よみがえっちゃったの？！
+そんなのやだぁ！！　",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7DA1C 0x7EC 0x70000083 0xC780 0x14 0x1 0x1B03A",,"----------------------------",,,
+"Text","2 40 20","Mercury","うさぎちゃん[s40]！
+[s4]どうしたの？","Usagi-chan[s40]![s2] What's wrong?","Intro, part 2.",
+"Text","2 40 20","Moon","あっ[s40]！
+[s4]ゆめか・・・
+
+なぁんだ、そっか[s40]ぁ
+[s4]あは　あは
+
+あ[s2]ははははははははははははは
+ははははははははははははは[p2]は
+
+はははははははははははははは
+はははははははははははははは
+
+はははははははははははははは
+ははははははははははははは[p30]は","Oh[s40]!
+
+[s2]Um, I-I must've been dreaming[s40]![s4] Aha, aha...
+
+[s1][p1]Ahahahahahahahahahahahahaha
+hahahahahahahahahahahahahaha
+
+hahahahahahahahahahahahahaha
+hahahahahahahahahahahahahaha
+
+[p30]hahahahahahahahahahahahahaha
+hahahahahahahahahahahahahaha!",,
+"Text","2 40 20","Mars","うさぎ[s40]！
+[s4]ねてたわねっ！","Usagi[s40]![s2] Were you asleep?!",,
+"Text","2 40 20","Mercury","ずいぶん　うなされていた
+みたいだけど
+
+どんなゆめだったの？","It sounded like you had a nightmare.
+
+What was it about?",,
+"Text","2 40 20","Jupiter","..........なに[s40]？
+[s4]ダークキングダムがふっかつ？
+
+ひょっとして、みらいのこと[s8]を
+[s4]よち　しているのかも・・・","......Huh[s40]?[s2] The rebirth of the Dark Kingdom?
+
+Maybe you had a visio[s8]n[s2] of the future...",,
+"Text","2 40 20","Moon","なになに、それって
+ちょーのーりょく？？
+
+すっごーーい！！
+
+そしたら　テレビにでて
+ゆうめいになって
+
+おいしいもの　たくさんたべ[s40]て
+[s4]ようふくを　いっぱいかって
+
+それから　それから　それから","You mean I have psychic powers?!
+
+Awesome!!
+
+I could go on TV, become famous,
+
+eat lots of tasty food[s40],[s2] buy a bunch of new clothes...",,
+"Text","2 40 20","Venus","もう、うさぎちゃんたら・・・
+
+もし　ほんとだったら
+たいへんなことよ！
+
+レイちゃん、うらなって
+もらえないかしら？","Hush, Usagi-chan! This could be seriously bad!
+
+Rei-chan, can you try telling the future?",,
+"Text","2 40 20","Mars","やってみるわ！
+
+[s2]りん[s40]！[s2]びょう[s40]！[s2]とう[s40]！[s2]しゃ[s40]！
+[s2]かい[s40]！[s2]じん[s40]！[s2]れつ[s40]！[s2]ざい！
+
+ぜん！","[p60]Very well!
+
+[p40][s1]Rin,[s40] [s1]pyou,[s40] [s1]tou,[s40] [s1]sha,[s40] [s1]kai,[s40] [s1]jin,[s40] [s1]retsu,[s40] [s1]sai[s40]!
+
+[s1]Zen!",,
+"Text","2 40 20","Mars","・・・・・・・・・・・・・・
+
+たしかに　じゃあくな
+エナジーをかんじるわ
+
+じゅうばんデパートの
+ほうがくよ！","......
+
+I sense dark energy coming from Juban Department Store!",,
+"Text","2 40 20","Luna","そんな[s40]・・・
+
+[s4]ダークキングダムが
+ふっかつしたとでもいうの[s40]？[p80]　","Oh dear[s40]!...
+
+[s2][p80]Has the Dark Kingdom really been reborn[s40]?   ",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1B4CE 0xF8 0x5E000080 0xC0F0 0 0x2 0x1AF7E 0x1AF82",,"----------------------------",,,
+"Text","2 40 20","Moon","なんでこんなに
+
+ようまが
+いるのぉー","Where'd all these youma come from?!","Stage 1 intro, Moon.",
+"Text","2 40 20","Luna","ダーク
+キングダムの
+
+ふっかつは
+ほんとみたいね","It seems the Dark Kingdom has indeed
+
+been reborn...",,
+"Text","2 40 20","Moon","やるっきゃない
+って　かんじね","We'll just have to defeat them again!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1B0A6 0x128 0x5E000080 0xC0F0 0 0x1 0x1AF86",,"----------------------------",,,
+"Text","2 40 20","Mercury","せっかく
+
+べんきょう
+してたのに
+
+じゃまするなんて
+ゆるせないわ！","I don't appreciate my studies being
+
+interrupted!","Stage 1 intro, Mercury.",
+"Text","2 40 20","Luna","とにかく
+
+じゅうばん
+デパートへ
+
+いってみましょう","Quickly, to Juban Department Store!",,
+"Text","2 40 20","Mercury","そうね、
+いそぎましょう","Right! Let's hurry!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1B3DC 0xF2 0x5E000080 0xC0F0 0 0x1 0x1AF8A",,"----------------------------",,,
+"Text","2 40 20","Mars","すごいようきだわ","Something feels... off.","Stage 1 intro, Mars.",
+"Text","2 40 20","Crow","カァー","Caw!",,
+"Text","2 40 20","Mars","この
+セーラーマーズが
+
+きたからには
+ようまなんて
+
+いっぱつで
+あのよいきよ[p4]！","I, Sailor Mars,
+
+will take down you youma in one hit!","The [p4] in the original text here is almost certainly a programmer's mistake, so I've left it out of the translation.",
+"Text","2 40 20","Crow","
+
+カァー","Caw!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1B1CE 0x146 0x5E000080 0xC0F0 0 0x1 0x1AF8E",,"----------------------------",,,
+"Text","2 40 20","Jupiter","まちのへいわを
+みだす　ようまは
+
+ゆるしちゃ
+おけないね","I won't let you youma run amok in this town!","Stage 1 intro, Jupiter.",
+"Text","2 40 20","Luna","まさか
+してんのうも
+
+ふっかつして
+いるのかしら？","I wonder if the Shitennou have
+
+returned as well?",,
+"Text","2 40 20","Jupiter","とにかく
+ひとりのこらず
+
+たおして
+いくしかないな","If they have, we'll take 'em all down!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1B314 0xC8 0x5E000080 0xC0F0 0 0x1 0x1AF92",,"----------------------------",,,
+"Text","2 40 20","Venus","こんな
+ところにまで
+
+ようまが・・・","There are youma here...","Stage 1 intro, Venus.",
+"Text","2 40 20","Artemis","このさきにも
+たくさんいそうだ","Yes. Quite a lot of them.",,
+"Text","2 40 20","Venus","もう
+ゆるさないわよ！","Hmph! Not for long!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1BA78 0x1AE 0x4A000080 0xE050 0 0x1 0x1AF96",,"----------------------------",,,
+"Text","2 40 20","Moon","あなたね！
+
+ようまを
+
+あやつって
+いるのは","You! You're the one controlling the youma!","Stage 1 boss, Moon.",
+"Text","2 40 20","Manegin","わたしのなは
+ようまマネギン
+
+メタリアさまに
+かわって
+
+おしおきだ","I am Manegin.
+
+In the name of Queen Metaria,
+
+I shall punish you!",,
+"Text","2 40 20","Moon","ずるーい　それは
+あたしのセリフよ
+
+ほんけほんもと
+
+この
+セーラームーンが
+
+つきにかわって
+おしおきよ！","Hey! That's MY line!
+
+I am Sailor Moon!
+
+In the name of the moon, I will punish you!
+
+",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1B5C6 0x174 0x4A000080 0xE050 0 0x1 0x1AF9A",,"----------------------------",,,
+"Text","2 40 20","Manegin","やっときたか
+
+セーラー
+マーキュリー
+
+とんで　ひにいる
+かやのなか　とは
+
+おまえのことだ","So you've come, Sailor Mercury!
+
+Like a moth into the bug zapper!","Stage 1 boss, Mercury.",
+"Text","2 40 20","Mercury","それをいうなら
+
+とんで　ひにいる
+なつのむし　よ","I believe you mean,
+
+“Like a moth into the flame!”",,
+"Text","2 40 20","Manegin","う゛","Pfft!",,
+"Text","2 40 20","Mercury","みずでもかぶって
+はんせいしなさい","Douse yourself in water and repent!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1B978 0x100 0x4A000080 0xE050 0 0x1 0x1AF9E",,"----------------------------",,,
+"Text","2 40 20","Manegin","きたか
+セーラームーン
+
+いや　ちがった
+セーラーマーズか","So you've come, Sailor Moon!
+
+...Oh, wait! You're Sailor Mars!","Stage 1 boss, Mars.",
+"Text","2 40 20","Mars","あたしは　そんな
+ドジじゃないわよ
+
+かせいにかわって
+せっかんよ！","How dare you mistake me for that klutz!
+
+In the name of Mars, I will chastise you!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1B73A 0x12C 0x4A000080 0xE050 0 0x1 0x1AFA2",,"----------------------------",,,
+"Text","2 40 20","Manegin","まっていたぞ
+
+セーラー
+ジュピター！","I've been waiting, Sailor Jupiter!","Stage 1 boss, Jupiter.",
+"Text","2 40 20","Jupiter","いせいだけは
+いいようだね
+
+セーラー
+ジュピター
+
+ただいま
+さんじょう！
+
+あたしの
+でんげきを
+
+うけてみるかい？","You're brave, I'll give you that!
+
+Ready for a powerful shock?
+
+Here comes Sailor Jupiter!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1B866 0x112 0x4A000080 0xE050 0 0x1 0x1AFA6",,"----------------------------",,,
+"Text","2 40 20","Venus","みつけたわよ！
+
+かくごして
+ちょうだい！","There you are! Prepare to fight!","Stage 1 boss, Venus.",
+"Text","2 40 20","Manegin","なにっ！
+だれだっ！","Huh? Who are you?!",,
+"Text","2 40 20","Venus","あいとせいぎの
+
+セーラー
+ヴィーナス
+
+とうじょうさせて
+もらいます！","Allow me to introduce myself!
+
+I am Sailor Venus,
+
+Senshi of Love and Justice!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7E208 0x20 0x4A000080 0xE050 0 0x1 0x1B096",,"----------------------------",,,
+"Text","2 40 20","Manegin","なにっ！","Huh?!","Stage 1 boss interjection after Tuxedo throws his rose.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7E228 0xCE 0x4A000080 0xE050 0 0x1 0x1B02A",,"----------------------------",,,
+"Text","2 40 20","Tuxedo","デパートは
+
+しょみんの
+リフレッシュのば
+
+みにくき
+ようまは
+
+セーラームーン
+ショーにでも
+
+でるがいい","The Department Store is where normal folk
+
+go to unwind.
+
+Sailor Moon!
+
+Make short work of this hideous youma!","Stage 1 boss Tuxedo speech.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1C238 0x130 0x5E000080 0xC0F0 0 0x1 0x1AFAA",,"----------------------------",,,
+"Text","2 40 20","Moon","せっかく
+
+ゆうえんちに
+きたのに
+
+たたかわなきゃ
+いけないなんて
+
+やだ、やだあ","Oh, come on! It's an amusement park!
+
+I don't wanna fight here!","Stage 2 intro, Moon.",
+"Text","2 40 20","Luna","ようまがさきよ
+セーラームーン","There are youma up ahead, Sailor Moon!",,
+"Text","2 40 20","Moon","さっさと
+かたづけて
+
+あそぼーっと！","The sooner I defeat them,
+
+the sooner I can go play!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1BC26 0x18E 0x5E000080 0xC0F0 0 0x1 0x1AFAE",,"----------------------------",,,
+"Text","2 40 20","Mercury","せっかくの
+にちようびだから
+
+おべんきょう
+したいのに・・・
+
+えーと
+えんしゅうりつは
+
+３.１４１５９
+２６５３５８９
+
+７９３・・・","It's Sunday, so I should be studying...
+
+Let's see, pi is 3.141592653589793...","Stage 2 intro, Mercury.",
+"Text","2 40 20","Luna","ちょっと
+ちょっと
+
+こんなところまで
+きて
+
+おべんきょう
+しないの！","What? Now isn't the time for studying!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1C0CE 0x16A 0x5E000080 0xC0F0 0 0x1 0x1AFB2",,"----------------------------",,,
+"Text","2 40 20","Mars","ゆめをあたえる
+ゆうえんちに","The amusement park,
+
+where dreams come true...","Stage 2 intro, Mars.",
+"Text","2 40 20","Crow","カァー","Caw!",,
+"Text","2 40 20","Mars","あらわれるなんて
+ゆるせないわ！","I won't let you youma overrun this place!",,
+"Text","2 40 20","Crow","カァー","Caw!",,
+"Text","2 40 20","Mars","１００おく°Cの
+
+いかりの
+ファイヤーよ！","Feel the flame that burns at
+
+ten billion degrees Celsius!",,
+"Text","2 40 20","Crow","カァー　カァー","Caw caw!",,
+"Text","2 40 20","Mars","・・・いちいち
+うるさいわよ","Hush, you!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1BDB4 0x13A 0x5E000080 0xC0F0 0 0x1 0x1AFB6",,"----------------------------",,,
+"Text","2 40 20","Jupiter","あっ　いけない！
+
+ビーフ
+ストロガノフを
+
+ひにかけた
+ままだった
+
+オーブンのなかの
+チェリーパイも
+
+ごめーん　ルナ
+みてきてくれる？","Uh oh!
+
+I left beef stroganoff cooking on the stove
+
+and a cherry pie in the oven!
+
+Luna, could you go check on them for me?","Stage 2 intro, Jupiter.",
+"Text","2 40 20","Luna","もー
+しょうがないわね","*sigh*
+All right.",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1BEEE 0x1E0 0x5E000080 0xC0F0 0 0x1 0x1AFBA",,"----------------------------",,,
+"Text","2 40 20","Venus","やあーん
+
+あそべると
+おもったのにぃー
+
+もうっ！
+
+ハイパー　
+ゴールデン
+
+グレート　
+ダイナマイツ
+
+モーレツ
+スパーク
+
+デリシャス
+ターボ
+
+ウルトラ
+スーパー
+
+ビック
+スペシャル
+
+クレッセント
+ビームを
+
+おみまい
+しちゃうわよ","Darn! I came here to have fun, not to fight!
+
+Hmph! Feel the power of my hyper golden
+
+great dynamic mega spark delicious turbo
+
+ultra super big special Crescent Beam!","Stage 2 intro, Venus.",
+"Text","2 40 20","Artemis","・・・ながいよ
+みなこ","...That's a mouthful, Minako.",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1CACA 0x246 0x4A000080 0xE050 0 0x1 0x1B03E",,"----------------------------",,,
+"Text","2 40 20","Jadeite","わたしのふっかつ
+きねんとして
+
+きみに
+
+プレゼントを
+おくろう","I've brought you a present to celebrate
+
+my return.","Stage 2 boss, Moon.",
+"Text","2 40 20","Moon","え、プレゼント？
+なあに、なあに？","Ooh, a present! What is it?",,
+"Text","2 40 20","Jadeite","あいかわらずだな
+
+し　というなの
+プレゼントだ！","Heh! You gullible fool! It's death, of course!",,
+"Text","2 40 20","Moon","なによ！
+
+そんなもの
+いらないわよ！
+
+もうちょっと
+きのきいた
+
+プレゼントは
+できないの！？
+
+そんなことじゃ
+もてないわよ","Death? That's a crappy gift!
+
+Couldn't you have got me something better?",,
+"Text","2 40 20","Jadeite","いわせておけば！","Enough! This ends now!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1C368 0x212 0x4A000080 0xE050 0 0x1 0x1B042",,"----------------------------",,,
+"Text","2 40 20","Jadeite","わたしに
+
+たおされるとも
+しらず
+
+のこのこ
+でてきおって
+
+いのなかのかえる
+だな","How brazen of you to challenge me without
+
+a second thought!
+
+A toad in a pool never knows the vast ocean.","Stage 2 boss, Mercury.",
+"Text","2 40 20","Mercury","それをいうなら
+
+いのなかのかわず
+よ
+
+それに　こういう
+ときには
+
+つかわないわ","I believe you mean,
+
+“A frog in a well never knows the vast ocean!”
+
+Although that expression doesn't
+
+quite work here.",,
+"Text","2 40 20","Jadeite","う、うぬ゛ぬ゛
+
+ふっ、こうぼうも
+ふでにあやまる
+
+だな","Hmph! Well, even Homer sometimes slips.",,
+"Text","2 40 20","Mercury","こうぼうも
+ふでのあやまりよ
+
+ぼけつを
+ほったわね","You mean, “Even Homer sometimes nods.”
+
+You should've quit while you were ahead.",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1C944 0x186 0x4A000080 0xE050 0 0x1 0x1B046",,"----------------------------",,,
+"Text","2 40 20","Jadeite","ここであったが
+１００おくねんめ
+
+あのときの
+うらみを
+
+はらしてくれよう","Ah-ha! I've found you at last!
+
+Time to settle the score!","Stage 2 boss, Mars.",
+"Text","2 40 20","Mars","やれるものなら
+
+やって
+ごらんなさい
+
+それに
+にちようびが
+
+つぶれた
+だいしょうは
+
+おおきいわよ！
+
+かくごして
+ちょうだい！","Heh! Be my guest!
+
+Oh, and you're going to pay dearly for
+
+ruining my Sunday! Prepare to fight!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1C57A 0x16E 0x4A000080 0xE050 0 0x1 0x1B04A",,"----------------------------",,,
+"Text","2 40 20","Jadeite","はじめて
+みるかおだな
+
+わたしは
+ダークキングダム
+
+してんのうの
+ひとり
+
+ジェダイト！","I haven't seen you before.
+
+I am Jadeite,
+
+one of the Shitennou of the Dark Kingdom!","Stage 2 boss, Jupiter.",
+"Text","2 40 20","Jupiter","だれであろうと
+
+ダークキングダム
+は
+
+ゆるしちゃ
+おけないね
+
+せいぎの
+いかずちで
+
+せいばいする！","I won't go easy on anyone from
+
+the Dark Kingdom!
+
+I'll punish you with righteous thunder!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1C6E8 0x25C 0x4A000080 0xE050 0 0x1 0x1B04E",,"----------------------------",,,
+"Text","2 40 20","Jadeite","ほう
+セーラーせんしも
+
+ふえたものだな
+
+だが　しょせんは
+こむすめ、
+
+おそるるに
+たらん","Another Sailor Senshi?
+
+No matter! You're just a teenage girl!
+
+You pose no threat to me!","Stage 2 boss, Venus.",
+"Text","2 40 20","Venus","そうかしら？
+
+かっぱの
+かわおよぎ　って
+
+ことわざもあるし","Is that so? You know what they say:
+
+“Even a kappa swims in the river!”",,
+"Text","2 40 20","Jadeite","それをいうなら
+
+かっぱの
+かわおとし
+
+じゃないのか？","I think that's, “Even a kappa fords the river.”
+
+Right?",,
+"Text","2 40 20","Venus","それも
+
+ちがうような
+きがするんだけど","Hmm. That doesn't sound right either.",,
+"Text","2 40 20","Artemis","かっぱの
+かわながれ　だよ","The saying is, “Even a kappa can drown.”",,
+"Text","2 40 20","Venus","・・・とにかく
+しょうぶよ！","...Well, whatever! Let's fight!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7E2F6 0x24 0x4A000080 0xE050 0 0x1 0x1B09A",,"----------------------------",,,
+"Text","2 40 20","Jadeite","だれだっ！","Who are you?!","Stage 2 boss interjection after Tuxedo throws his rose.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7E31A 0xA2 0x4A000080 0xE050 0 0x1 0x1B02E",,"----------------------------",,,
+"Text","2 40 20","Tuxedo","うるわしき
+
+おとめのゆめを
+こわすもの
+
+こころさびしき
+さまよいびとよ
+
+さらば","Farewell, O lonely wanderer who destroys
+
+the dreams of lovely maidens!","Stage 2 boss Tuxedo speech.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1D1DC 0x138 0x5E000080 0xC0F0 0 0x1 0x1AFBE",,"----------------------------",,,
+"Text","2 40 20","Moon","どっひー！
+
+トレーラーの
+うえに
+
+たつなんて
+こわいよおー","Eeeek! I-I'm on top of a moving trailer!!","Stage 3 intro, Moon.",
+"Text","2 40 20","Luna","だめじゃないの！
+
+にげていても
+
+ようまは
+おそってくるのよ","Get a hold of yourself!
+
+Run and the youma will simply chase after you!",,
+"Text","2 40 20","Moon","だって、だってー
+こわいんだもん","T-this suuuucks!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1CD10 0x10A 0x5E000080 0xC0F0 0 0x1 0x1AFC2",,"----------------------------",,,
+"Text","2 40 20","Mercury","このトレーラーは
+
+ちゃんと
+
+ほうていそくどを
+まもって
+
+うんてん
+しているわね","It seems this trailer is obeying the speed limit.","Stage 3 intro, Mercury.",
+"Text","2 40 20","Luna","・・・それより
+
+めのまえの
+てきよ","Look out! There are enemies up ahead!",,
+"Text","2 40 20","Mercury","ごめんなさい","Oops! Sorry!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1D0DE 0xFE 0x5E000080 0xC0F0 0 0x1 0x1AFC6",,"----------------------------",,,
+"Text","2 40 20","Mars","やっぱり
+いいおんなは
+
+たかいところが
+よくにあうわねー","A high place suits a pretty girl like me!","Stage 3 intro, Mars.",
+"Text","2 40 20","Crow","カァー？","Caw?",,
+"Text","2 40 20","Mars","でも　なんとなく
+
+とくさつヒーロー
+ばんぐみみたいね","Although I kind of feel like I'm in a
+
+superhero show...",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1CE1A 0x1A2 0x5E000080 0xC0F0 0 0x1 0x1AFCA",,"----------------------------",,,
+"Text","2 40 20","Jupiter","やっぱり
+
+たたかう
+ぶたいは
+
+ハデなほうが
+きぶんがいいな
+
+セーラー
+ジュピターの
+
+おとおりだーい！
+
+みなのもの
+ずが　たかーい！","Wow, what a dramatic setting for a battle!
+
+Behold! Sailor Jupiter cometh!","Stage 3 intro, Jupiter.",
+"Text","2 40 20","Luna","もう・・・
+
+じだいげき
+じゃないんだから","Enough with the theatrics...",,
+"Text","2 40 20","Jupiter","ちょっとした
+ジョークだよ
+
+ジョーク","Hey! It was only a joke!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1CFBC 0x122 0x5E000080 0xC0F0 0 0x1 0x1AFCE",,"----------------------------",,,
+"Text","2 40 20","Venus","きゃいーん！
+
+ジェット
+コースターより
+
+スリルあるー！","Whoaaaa!
+
+This is more thrilling than a roller coaster!","Stage 3 intro, Venus.",
+"Text","2 40 20","Artemis","ゆうえんちじゃ
+ないんだから
+
+おちないように
+きをつけてよ","This isn't an amusement park!
+
+Be careful not to fall!",,
+"Text","2 40 20","Venus","やあーね
+わかってるわよ","Yeah, yeah! I know!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1DA92 0x214 0x4A000080 0xE050 0 0x1 0x1B052",,"----------------------------",,,
+"Text","2 40 20","Moon","ネフライト・・・
+
+もう　ダーク
+キングダムの
+
+そしきから
+ぬけたんでしょ
+
+なるちゃんに
+あって！
+
+きっと
+よろこぶわ","Nephrite... You've escaped the clutches
+
+of the Dark Kingdom again!
+
+Go see Naru-chan! She'll be so happy!","Stage 3 boss, Moon.",
+"Text","2 40 20","Nephrite","なる・・・？
+
+そんなものは
+しらんな
+
+われわれの
+
+じゃまを
+するものは
+
+きえてもらう！","Naru...? I've no idea who that is!
+
+I shall get rid of anyone who
+
+stands in our way!",,
+"Text","2 40 20","Moon","きっと
+
+あやつられて
+いるんだわ
+
+あたしが　めを
+さまさせてあげる","Oh, you're being controlled.
+
+I'll help snap you out of it!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1D314 0x182 0x4A000080 0xE050 0 0x1 0x1B056",,"----------------------------",,,
+"Text","2 40 20","Mercury","あなたは・・・","You are...","Stage 3 boss, Mercury.",
+"Text","2 40 20","Nephrite","してんのうの
+ひとりネフライト","I am Nephrite, one of the Shitennou.",,
+"Text","2 40 20","Mercury","またのなを
+
+さんじょういん
+まさと・・・
+
+もう
+わるいことは
+
+やめたんじゃ
+ないの？","Otherwise known as Masato Sanjoin...
+
+I thought you'd turned over a new leaf.",,
+"Text","2 40 20","Nephrite","さあな
+
+わたしは
+めのまえのてきを
+
+さくじょする
+だけだ","Nonsense.
+
+My only task is to defeat the enemy
+
+before me.",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1D8DC 0x1B6 0x4A000080 0xE050 0 0x1 0x1B05A",,"----------------------------",,,
+"Text","2 40 20","Nephrite","セーラーせんしよ
+
+ここが　おまえの
+はかばとなるのだ","Sailor Senshi!
+
+This place will be your grave!","Stage 3 boss, Mars.",
+"Text","2 40 20","Mars","めをさまして！
+
+なるちゃんを
+うらぎらないで！
+
+チョコレート
+パフェの
+
+やくそくを
+わすれたの？
+
+・・・あなたとは
+たたかえないわ","Snap out of it!
+
+Remember your promise to Naru-chan!
+
+You know, the chocolate parfait?
+
+...I-I can't fight you.",,
+"Text","2 40 20","Nephrite","　そうか・・・
+では　しぬがいい","...Then you will die!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1D496 0x1F4 0x4A000080 0xE050 0 0x1 0x1B05E",,"----------------------------",,,
+"Text","2 40 20","Nephrite","ひとりでくるとは
+
+たいした
+どきょうだな
+
+よほど
+じしんがあるのか
+
+それとも　ただの
+いのち　しらずか","Facing me all alone, eh?
+
+You're either very courageous
+
+or very reckless...","Stage 3 boss, Jupiter.",
+"Text","2 40 20","Jupiter","あんたが
+うわさにきいた
+
+ネフライトか
+
+いったい　どう
+しちゃったんだ？
+
+せんのう　されて
+しまったのか？","...Nephrite? I heard about you.
+
+Have you been brain-
+washed or something?",,
+"Text","2 40 20","Nephrite","なにを　ぶつぶつ
+いっている？
+
+いくぞ！","Enough of your prattle! En garde!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1D68A 0x252 0x4A000080 0xE050 0 0x1 0x1B062",,"----------------------------",,,
+"Text","2 40 20","Nephrite","よくきたな
+
+その　ゆうきを
+たたえ
+
+らくに
+ころしてやろう","How brave of you to confront me!
+
+I'll take great pleasure in killing you!","Stage 3 boss, Venus.",
+"Text","2 40 20","Venus","え？　たしか
+
+なるちゃんの
+あいに　ふれて
+
+めざめたって
+きいたけど・・・","Huh? I thought you fell in love with Naru-chan
+
+and turned good...",,
+"Text","2 40 20","Nephrite","ふんそんなものは
+しらんな
+
+・・・こうげき
+してこないならば
+
+こっちからいくぞ","Hmph! I've no idea what you mean.
+
+Now stop prattling and face me in combat!",,
+"Text","2 40 20","Venus","こうなったら
+しょうがない
+
+あたしの
+あいのムチで
+
+めを　さまさせて
+さしあげるわ！","So be it. I'll bring you to your senses
+
+with my whip of love!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7E3BC 0x1C 0x4A000080 0xE050 0 0x1 0x1B09E",,"----------------------------",,,
+"Text","2 40 20","Nephrite","むっ！","Hm?!","Stage 3 boss interjection after Tuxedo throws his rose.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7E3D8 0xAA 0x4A000080 0xE050 0 0x1 0x1B032",,"----------------------------",,,
+"Text","2 40 20","Tuxedo","あいをわすれた
+かりゅうどよ
+
+かれた　こころの
+いずみに
+
+はなたばを
+
+さらば・・・","O hunter who has forgotten love,
+
+accept a bouquet of flowers into
+
+the dried wellspring of your heart!
+
+Farewell...","Stage 3 boss Tuxedo speech.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1DF46 0xDA 0x5E000080 0xC0F0 0 0x1 0x1AFD2",,"----------------------------",,,
+"Text","2 40 20","Moon","なーんか
+すべりそうねー","Whoa! This floor is slippery!","Stage 4 intro, Moon.",
+"Text","2 40 20","Luna","まあすべることは
+ないとおもうけど
+
+だれかさんは
+
+おっちょこちょい
+だからねー","I think it's just that you're clumsy...",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1DCA6 0x7A 0x5E000080 0xC0F0 0 0x1 0x1AFD6",,"----------------------------",,,
+"Text","2 40 20","Mercury","なにか
+
+いやなよかんが
+するわ","I have a bad feeling about this place.","Stage 4 intro, Mercury.",
+"Text","2 40 20","Luna","ゆだんしちゃ
+だめよ！","Keep your guard up!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1DEB0 0x96 0x5E000080 0xC0F0 0 0x1 0x1AFDA",,"----------------------------",,,
+"Text","2 40 20","Mars","ネフライトがでて
+きたってことは
+
+つぎはゾイサイト
+かしら？","We just fought Nephrite.
+
+I wonder if we'll encounter Zoisite next?","Stage 4 intro, Mars.",
+"Text","2 40 20","Crow","カァー","Caw!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1DD20 0xD6 0x5E000080 0xC0F0 0 0x1 0x1AFDE",,"----------------------------",,,
+"Text","2 40 20","Jupiter","しかし、ようまを
+たおしても
+
+たおしても
+きりがないね","There seems to be no end to all these youma!","Stage 4 intro, Jupiter.",
+"Text","2 40 20","Luna","てきのほんきょち
+までもうすこしよ
+
+がんばって","We're very close to the enemy's stronghold!
+
+Keep going!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1DDF6 0xBA 0x5E000080 0xC0F0 0 0x1 0x1AFE2",,"----------------------------",,,
+"Text","2 40 20","Venus","ちょっと　だけ
+
+ひとやすみ
+したいわね
+
+だめ？","Can't we take a little break?","Stage 4 intro, Venus.",
+"Text","2 40 20","Artemis","だーめ！
+
+ほら、まえから
+ようまがきたぞ","Nope! Now pay attention!
+
+There are youma up ahead!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7E4A6 0x47E 0x4A000080 0xE050 0 0x2 0x1B036 0x1B066",,"----------------------------",,,
+"Text","2 40 20","Zoisite","ウフフフフ・・・
+
+ひさしぶりね
+おじょうちゃん
+
+クイン・メタリア
+さまの
+
+おちからで
+
+このよに
+ふたたび
+
+まいもどって
+きたわ
+
+ほーーーー
+ほっほっほ
+
+いだいなる
+
+メタリアさまの
+ために、
+
+そして
+
+わたしの
+あいする
+
+クンツァイトさま
+のために・・・
+
+こんどこそ
+かたせてもらうわ
+
+いぜん
+わたしの
+
+うつくしい
+かおに
+
+ドロをぬった
+つみは
+
+おもいわよ
+
+かくごは
+できてるかしら？
+
+ま、あたしの
+ラブラブパワーに
+
+たいこう
+しようなんて
+
+１００ちょうねん
+はやいわね
+
+なんたって
+わたしと
+
+クンツァイトさま
+は
+
+あいしあって
+いるんですもの
+
+クンツァイトさま
+このしょうりを
+
+あなたに
+ささげます
+
+みていてください","Heeheehee... It's been a while, my dear!
+
+We were brought back to this world
+
+by Queen Metaria's power.
+
+Ohohohoho! You caused me unfathomable
+
+disgrace, but this time I shall triumph...
+
+...for Queen Metaria and my beloved Kunzite!
+
+Never in a million years can you contend
+
+with my Love Power, as Lord Kunzite and I
+
+are wholly devoted to one another.
+
+Watch, Kunzite! This victory is for you!","Stage 4 boss. The dialogue doesn't vary per character; Zoisite always gets this enormous spiel.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1E3E4 0xF6 0x5E000080 0xC0F0 0 0x1 0x1AFE6",,"----------------------------",,,
+"Text","2 40 20","Moon","ひゃー　さむーい
+
+コートをとって
+くるんだった","It's cold here! I'm gonna go grab a coat!","Stage 5 intro, Moon.",
+"Text","2 40 20","Luna","なにいってるの
+
+ほんきょちは
+すぐそこなのよ","Absolutely not! The enemy's stronghold
+
+is close by!",,
+"Text","2 40 20","Moon","えへー
+ごめん、ごめん","Eheh! Okay, sorry!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1E020 0xC0 0x5E000080 0xC0F0 0 0x1 0x1AFEA",,"----------------------------",,,
+"Text","2 40 20","Luna","ついに
+
+ここまで
+きたわね","We've finally arrived.","Stage 5 intro, Mercury.",
+"Text","2 40 20","Mercury","むこうから
+メタリアの
+
+エナジー
+はんのうがあるわ
+
+いきましょう","I can feel Metaria's energy emanating
+
+from inside. Let's go!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1E2E4 0x100 0x5E000080 0xC0F0 0 0x1 0x1AFEE",,"----------------------------",,,
+"Text","2 40 20","Crow","カァー　カァー
+カァー　カァー","Caw, caw, caw!","Stage 5 intro, Mars.",
+"Text","2 40 20","Mars","フォボスと
+ディモスも
+
+じゃあくな
+エナジーを
+
+かんじとって
+いるわ
+
+ほんきょちは
+ちかいわね","Phobos and Deimos sense dark energy.
+
+The enemy's stronghold must be nearby.",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1E0E0 0xB6 0x5E000080 0xC0F0 0 0x1 0x1AFF2",,"----------------------------",,,
+"Text","2 40 20","Jupiter","ほんきょちは
+ちかいな","The enemy's stronghold must be nearby!","Stage 5 intro, Jupiter.",
+"Text","2 40 20","Luna","もうすこしだから
+がんばって！","Indeed it is! Keep going!",,
+"Text","2 40 20","Jupiter","とにかく
+すすむしかないね","Heh! Not like I have a choice...",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1E196 0x14E 0x5E000080 0xC0F0 0 0x1 0x1AFF6",,"----------------------------",,,
+"Text","2 40 20","Artemis","ほんきょちまで
+あとすこし・・・
+
+こころを
+しっかりもって
+
+つきすすんで
+いくんだ","We're almost to the enemy's stronghold...
+
+Stay sharp and press onward!","Stage 5 intro, Venus.",
+"Text","2 40 20","Venus","こころ　ここに
+あらざれば
+
+みれども　みえず
+[p40]ね","Right! “The eye is blind if the mind is absent.”",,"Original timing is 4 4 20 (mistake?)"
+"Text","2 40 20","Artemis","うん、ただしい
+つかいかただ！","Well said!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7E924 0x1FE 0x4A000080 0xE050 0 0x1 0x1B06A",,"----------------------------",,,
+"Text","2 40 20","Kunzite","まちかねたぞ！
+セーラーせんしよ
+
+よくも
+
+わたしの
+かわいい
+
+ゾイサイトを！
+
+ゆるさん・・・
+ゆるさんぞ！
+
+ゾイサイト・・・
+おまえを
+
+かばって
+やれなかった
+
+わたしを
+ゆるしてくれ
+
+せめて　わたしの
+うでのなかで
+
+しなせて
+やりたかった
+
+かたきは
+うたせてもらう！","I've been waiting for you, Sailor Senshi!
+
+You killed my darling Zoisite,
+
+and now you shall pay!
+
+Zoisite... Please forgive me,
+
+for I failed to protect you!
+
+I shall slay our enemy and avenge
+
+your untimely death!","Stage 5 midboss. Like the Zoisite battle, there's only one set of dialogue for all characters.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7E482 0x24 0x4A000080 0xE050 0 0x1 0x1B0A2",,"----------------------------",,,
+"Text","2 40 20","Kunzite","だれだっ！","Who are you?!","Stage 5 midboss exclamation.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1E99A 0x13A 0x4A000080 0xE050 0 0x1 0x1B06E",,"----------------------------",,,
+"Text","2 40 20","Moon","ああ・・・！？
+
+エンディミオン
+さま・・・
+
+いままで
+
+あたしをたすけて
+くれたのに・・・
+
+まもるさん！","Huh?
+
+Lord Endymion... Are you here to rescue me?
+
+Mamoru-san...!","Stage 5 boss, Moon.",
+"Text","2 40 20","Endymion","・・・・・・・・","......",,
+"Text","2 40 20","Moon","あたしのこえが
+きこえないの？","Hey! Can't you hear me?",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1E4DA 0x100 0x4A000080 0xE050 0 0x1 0x1B072",,"----------------------------",,,
+"Text","2 40 20","Mercury","そんな・・・
+
+あの
+まもるさんが？","Is that you... Mamoru-san?","Stage 5 boss, Mercury.",
+"Text","2 40 20","Endymion","・・・・・・・・","......",,
+"Text","2 40 20","Mercury","きっと
+
+せんのうされて
+いるんだわ
+
+もとにもどして
+あげないと・・・","It seems you're under someone's control.
+
+I'll have to bring you back to your senses...",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1E7F0 0x1AA 0x4A000080 0xE050 0 0x1 0x1B076",,"----------------------------",,,
+"Text","2 40 20","Mars","エンディミオン、
+いや　まもるさん
+
+あなた[p40]は
+
+わすれて
+しまったの！？","Endymion--er, Mamoru-san!
+
+Have you lost your mind?","Stage 5 boss, Mars.","Original timing: 4 4 20"
+"Text","2 40 20","Endymion","・・・・・・・・","......",,
+"Text","2 40 20","Mars","あたしたちと
+
+ともに
+たたかったことを
+
+あなたの
+あいした
+
+セーラームーンの
+ことを！
+
+おもいだして！","Remember when you fought alongside us!
+
+Remember your beloved Sailor Moon!",,
+"Text","2 40 20","Endymion","・・・・・・・・","......",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1E5DA 0x12E 0x4A000080 0xE050 0 0x1 0x1B07A",,"----------------------------",,,
+"Text","2 40 20","Jupiter","いったいこれは？
+
+エンディミオン
+さまがてきに！？
+
+しょうきに
+もどって！
+
+おねがいだよ","What's wrong, Lord Endymion?
+
+Are you under the enemy's control?
+
+C'mon, snap out of it!!","Stage 5 boss, Jupiter.",
+"Text","2 40 20","Endymion","・・・・・・・・","......",,
+"Text","2 40 20","Jupiter","だめだ！
+
+きこえてない
+みたいだ・・・","It's no use! He can't hear me...",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1E708 0xE8 0x4A000080 0xE050 0 0x1 0x1B07E",,"----------------------------",,,
+"Text","2 40 20","Venus","あれは・・・
+
+エンディミオン
+さま・・・？","Huh? Lord Endymion...?","Stage 5 boss, Venus.",
+"Text","2 40 20","Endymion","・・・・・・・・","......",,
+"Text","2 40 20","Venus","まもるさん、
+どうしちゃったの
+
+めをさまして！","What's wrong with you, Mamoru-san?
+
+Snap out of it!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1F078 0x124 0x4A000080 0xE050 0 0x1 0x1B082",,"----------------------------",,,
+"Text","2 40 20","Moon","まもるさんを
+ちからずくで
+
+ものにしよう
+なんて
+
+まちがっているわ","Bending Mamoru-san to your will was
+
+a big mistake!","Stage 5 final boss, Moon.",
+"Text","2 40 20","Beryl","おのれ・・・
+また　わたしから
+
+エンディミオンを
+うばおうとする
+
+ゆるさん！","How dare you try to steal Endymion away
+
+from me again!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1EAD4 0x19A 0x4A000080 0xE050 0 0x1 0x1B086",,"----------------------------",,,
+"Text","2 40 20","Mercury","エンディミオン
+さまは
+
+かえして
+もらったわよ","Lord Endymion has come to his senses.","Stage 5 final boss, Mercury.",
+"Text","2 40 20","Beryl","なんど
+
+エンディミオンを
+うばおうとしても
+
+また　わたしの
+
+とりこにして
+みせるわ！","No matter how many times you steal him
+
+from me, I'll just make him my slave again!",,
+"Text","2 40 20","Mercury","ムダだわ・・・
+
+あいは
+
+しょうがいに
+あうごとに
+
+せいちょう
+するものよ","But why...?
+
+After all, love grows with obstacles.",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1EEE0 0x198 0x4A000080 0xE050 0 0x1 0x1B08A",,"----------------------------",,,
+"Text","2 40 20","Mars","いくら
+
+エンディミオン
+さまを
+
+てにいれても
+
+ほんとうの
+あいをしらない
+
+あなたは
+かわいそうだわ","You're pathetic! Lord Endymion will
+
+never love you!","Stage 5 final boss, Mars.",
+"Text","2 40 20","Beryl","フハハハハ・・・
+
+なにをいいだすと
+おもえば
+
+そんなことか
+
+ほしいものは
+
+すべて
+てにいれる
+
+ただそれだけだ","Fwahaha... ! It makes no difference to me!
+
+All that matters is that he's mine!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1EC6E 0x126 0x4A000080 0xE050 0 0x1 0x1B08E",,"----------------------------",,,
+"Text","2 40 20","Jupiter","あいしあう
+ふたりをムリヤリ
+
+ひきはなそう
+なんて
+
+ゆるせないね！","I won't let you come between two people
+
+in love!","Stage 5 final boss, Jupiter.",
+"Text","2 40 20","Beryl","ふふふふふ・・・
+
+ちからだ、
+ちからこそ
+
+ゆいいつ
+しんじられる
+
+すべてなのだ","Fwahaha... Love means nothing!
+
+Power is the only thing one can rely on!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1ED94 0x14C 0x4A000080 0xE050 0 0x1 0x1B092",,"----------------------------",,,
+"Text","2 40 20","Venus","あいはうばうもの
+ではなくて
+
+あたえるものよ！
+
+そうすれば
+ひとからも
+
+あいされるように
+なるのよ","Love can only be given, not taken!
+
+You can't force someone to love you!","Stage 5 final boss, Venus.",
+"Text","2 40 20","Beryl","えーい！
+
+おまえみたいな
+こむすめが
+
+あいをかたるなど
+こざかしい","Such impudence!
+
+A little fool like you knows nothing of love!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1F704 0x222 0x4A000080 0xE050 0 0x1 0x1AFFA",,"----------------------------",,,
+"Text","2 40 20","Moon","クイン・メタリア
+
+せいせいどうどう
+しょうぶしなさい","Queen Metaria!
+
+Let's settle this fair and square!","Stage 6 boss, Moon.",
+"Text","2 40 20","Metallia","セーラームーンか
+
+あらそいも
+なにもない
+
+あんこくの
+おうこく・・・
+
+すばらしいと
+おもわないか？","Sailor Moon? I've no quarrel with you.
+
+The Dark Kingdom is incredible,
+
+don't you think?",,
+"Text","2 40 20","Moon","その　おうこくを
+つくるために
+
+なんのつみもない
+ひとを　ぎせいに
+
+するなんて
+ゆるせない！
+
+つきにかわって
+おしおきよ！","No, and I won't let you rebuild it with
+
+innocent lives!
+
+In the name of the moon, I will punish you!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1F19C 0x15E 0x4A000080 0xE050 0 0x1 0x1AFFE",,"----------------------------",,,
+"Text","2 40 20","Mercury","かんねん
+しなさい！
+
+・・・もう
+のこっているのは
+
+クイン・メタリア
+あなただけよ！","Only you remain, Queen Metaria!
+
+Accept your fate!","Stage 6 boss, Mercury.",
+"Text","2 40 20","Metallia","しょせんベリルも
+
+わたしにはとおく
+およばない・・・
+
+わたしのちからを
+おもいしるがよい","Even Beryl could not match my strength...
+
+I shall show you how powerful I am!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1F59E 0x166 0x4A000080 0xE050 0 0x1 0x1B002",,"----------------------------",,,
+"Text","2 40 20","Mars","ついに
+ここまできたわ
+
+ダークキングダム
+がほろぶときよ！","This is it!
+
+It's time to take down the Dark Kingdom!","Stage 6 boss, Mars.",
+"Text","2 40 20","Metallia","グハハハハ・・・
+
+たったひとりで
+なにができる？","Gwahaha! You cannot defeat me alone!",,
+"Text","2 40 20","Mars","ひとりじゃないわ
+
+みんなの
+しんじあう
+
+こころが
+あるかぎり・・・","I'm not alone!
+
+Not as long as everyone has faith in me...",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1F2FA 0x114 0x4A000080 0xE050 0 0x1 0x1B006",,"----------------------------",,,
+"Text","2 40 20","Jupiter","ついにきたな","This is it...","Stage 6 boss, Jupiter.",
+"Text","2 40 20","Metallia","・・・ちっぽけな
+そんざいの
+
+おまえに
+なにができる？","...What can you do, puny creature?",,
+"Text","2 40 20","Jupiter","あたしの
+いのちにかえても
+
+この　ちきゅうを
+まもってみせる！","Protect the Earth at all costs!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x1F40E 0x190 0x4A000080 0xE050 0 0x1 0x1B00A",,"----------------------------",,,
+"Text","2 40 20","Venus","これが
+クイン・メタリア","You're Queen Metaria!","Stage 6 boss, Venus.",
+"Text","2 40 20","Metallia","おまえがここまで
+これたのは
+
+ぐうぜんでしか
+ないのだ・・・
+
+わたしのダーク
+パワーにまさる
+
+ものなどない！","It was blind luck that you made it this far!
+
+Nothing can defeat my dark power!",,
+"Text","2 40 20","Venus","みんなのきぼうを
+せおっているのよ
+
+わたしは
+まけられないわ！","Everyone's counting on me! I can't lose!",,
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7EB22 0x140 0x70000083 0xE780 0x14 0x1 0x1B012",,"----------------------------",,,
+"Text","4 40 -1","NONE","　　[s10]おぼえているがいい
+
+にんげんに、たにんをにくむ
+こころがあるかぎり
+
+わたしは　かならずよみがえる
+
+[s4]　　　　[s2]かならず[s40]！・・・・
+
+[s8]ぐ[s7]わ[s6]あ[s5]あ[s4]あ[s3]あ[s2]あ[s1]ああ・・・[s40]・　　","                [s5]Mark my words!
+
+So long as there is hate within the hearts of humankind, I shall be...
+
+[s2]                      [s1]reborn[s40]!...
+
+[s8]A[s7]r[s6]r[s5]r[s4]g[s3]g[s2]h[s1]hh!..[s40]. ","Stage 6 boss death speech.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7F366 0x2D8 0x70000083 0xE780 0x14 0x1 0x1B016",,"----------------------------",,,
+"Text","4 40 -1","NONE","　　　[s10]これでやっと
+
+ふつうの　おんなのこの
+せいかつにもどれるのね
+
+おともだちと　みんなで
+わいわい　いいながら
+
+オシャレや[s40]　[s10]たべもの[s40]や
+[s10]ボーイフレンドのはなしをする
+
+そんな[s40]　[s10]なんでもないこと[s40]や
+[s10]ほんのちょっとした
+
+ちいさなことに、よろこびや
+しあわせをみつける
+
+[s8]・・・[s10]そんな[s8]・・・[s10]そんな
+
+ふつうの　おんなのこ[s40]の
+[s10]せいかつにもどれるのね
+
+そして
+あたしも[s20]・・・[s10]まもるさん[s40]と　","[s9]Now I can go back to being a normal teenage girl.
+
+Hanging out with my friends,
+
+talking about food,[s40] [s9]clothes,[s40] [s9]and boys...
+
+Finding joy in the little things.
+
+[s7]All I want[s9] i[s40]s[s9] a normal life...
+
+[s20]...[s9]with Mamoru-san..[s40]. ","Ending, Moon.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7EC62 0x1E4 0x70000083 0xE780 0x14 0x1 0x1B01A",,"----------------------------",,,
+"Text","6 40 -1","NONE","たたかいはおわったわ
+
+これからは、ふつうのおんなの
+ことして、せいかつできるのね
+
+がんばらなくっちゃ！
+
+がっこうせいかつ[s40]に
+[s10]おべんきょう
+
+そしてこいに[s20]・・・
+
+[s10]こいか[s40]・・・
+[s10]あたしは、こいに
+
+おくびょうになって
+いたのかもしれないわね
+
+あたしも[s40]・・・","With the battle won,
+
+I can go back to living a normal life.
+
+I must focus my efforts on student life[s40],[s6] my studies,
+
+and love[s20]...
+
+[s6]Although[s40]...[s6] I suppose I've been rather timid about falling in love[s40]...","Ending, Mercury.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7F1E4 0x182 0x70000083 0xE780 0x14 0x1 0x1B01E",,"----------------------------",,,
+"Text","6 40 -1","NONE","きびしい　たたかいだった[s40]わ
+[s10]でも、もうそれもおわり[s20]・・・
+
+[s10]これからは、きぼうとじゆうに
+みちあふれた
+
+せいかつが　まっているのね
+
+あたし[s40]も
+[s10]ゆういちろうと[s40]・・・
+
+[s10]やだ、なにいってるのかし[s40]ら
+　　　","Our long fight[s40] [s6]has come to an end[s20]...
+
+[s6]Now I'm free to live my life to the fullest.
+
+Perhaps[s40] [s6]Yuuichiro and I could[s40]...
+
+[s6]Oops! Did I say that out loud[s40]?   ","Ending, Mars.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7EE46 0x1FA 0x70000083 0xE780 0x14 0x1 0x1B022",,"----------------------------",,,
+"Text","7 40 -1","NONE","おわった[s20]・・[s40]・
+[s10]この、ながいたたかいも[s40]・・・
+
+[s10]これで、ふつうのおんなのこ[s40]に
+[s10]もどれるんだな
+
+あたしも　まえにむかって
+あるいていかないと[s20]・・・
+
+[s6]いつまでも、せんぱいのかげを
+
+おいかけているだけじゃ
+だめなんだ[s40]！　　
+
+[s4]そう[s40]・・・　
+[s6]おもいっきり[s40]　[s6]こいをしよう[p120]！","Our long battle is finally over[s40]...
+
+[s7]Now I can go back to being[s40] [s7]a normal teenage girl.
+
+I can't keep pining after Senpai, though[s40]...
+
+[s5]I have to move on.
+
+[p120][s4]I have to look for[s40] [s5]a new[s40] [s5]love!","Ending, Jupiter.",
+"ScriptEnd",,,"----------------------------",,,
+"ScriptStart","0x7F040 0x1A4 0x70000083 0xE780 0x14 0x1 0x1B026",,"----------------------------",,,
+"Text","6 40 -1","NONE","ついにおわったのね
+
+ながく、くるしかった
+たたかいも[s40]・・・
+
+[s10]やっと、もどれるのね
+ふつうのせいかつに[s40]・・・
+
+[s6]あたしも　あるきだそう[s40]！　
+
+[s10]じっとしてちゃ
+なにも、はじまらないわ
+
+あたらし[s40]い
+[s10]こいをみつけに[s40]・・・　　　","Our long and difficult fight is over[s40]...
+
+[s6]Now I can go back to living a normal life[s40].
+
+[s4]However, nothing will change if I'm hung up on the past[s40]!
+
+[s6]I must move on and search for[s40] [s6]a new love[s40]...!   ","Ending, Venus.",
+"ScriptEnd",,,"----------------------------",,,
