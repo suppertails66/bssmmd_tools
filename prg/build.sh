@@ -40,6 +40,11 @@ echo "************************************************************************"
 make libmd
 make
 
+mkdir -p out/precmp
+mkdir -p out/cmp
+mkdir -p out/nocmp
+mkdir -p out/scripts
+
 # Location of the KENS tool koscmp, needed to compress files
 KOSCMP="./kens-1.5a1/build/src/tools/koscmp"
 
