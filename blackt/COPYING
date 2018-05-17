@@ -7,6 +7,9 @@ Nemanja Trifunovic's UTF8-CPP library -- consisting of utf8.h and all files in
 the src/util/utf8 directory -- uses a custom license, the text of which is
 provided below.
 
+The libpng header files in the libs/ directory are licensed under the libpng
+license.
+
 -------------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
