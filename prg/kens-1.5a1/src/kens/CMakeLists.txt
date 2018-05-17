@@ -33,4 +33,8 @@ add_library(saxman_shared SHARED GetFileSize.cpp S-Compressor.cpp S-Decompressor
 SET_TARGET_PROPERTIES(saxman_shared PROPERTIES OUTPUT_NAME saxman)
 
 install(TARGETS kosinski_static enigma_static nemesis_static saxman_static ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR})
-install(TARGETS kosinski_shared enigma_shared nemesis_shared saxman_shared LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR})
+if(WIN32)
+  install(TARGETS kosinski_shared enigma_shared nemesis_shared saxman_shared RUNTIME DESTINATION ${LIBRARY_INSTALL_DIR})
+else()
+  install(TARGETS kosinski_shared enigma_shared nemesis_shared saxman_shared LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR})
+endif()

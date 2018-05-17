@@ -9,7 +9,7 @@ CXX=g++
 CDEFINES = -DBLACKT_ENABLE_LIBPNG
 #CLIBS = -lpng
 CFLAGS = -std=gnu++11 -O2 -Wall
-CINCLUDES = 
+CINCLUDES = -I.
 CXXFLAGS=$(CFLAGS) $(CDEFINES) $(CINCLUDES) -I$(IDIR)
 
 SRC := $(wildcard $(SRCDIR)/*/*.cpp)
